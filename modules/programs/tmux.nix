@@ -3,8 +3,6 @@ with pkgs.tmuxPlugins; {
   programs.tmux = {
     baseIndex = 1;
     terminal = "tmux-256color";
-    historyLimit = 10000;
-    escapeTime = 0;
     keyMode = "vi";
     extraTmuxConf = ''
       # Automatically set window title
@@ -55,12 +53,6 @@ with pkgs.tmuxPlugins; {
       set -g @prefix_highlight_output_prefix "#[fg=brightcyan]#[bg=black]#[nobold]#[noitalics]#[nounderscore]#[bg=brightcyan]#[fg=black]"
       set -g @prefix_highlight_output_suffix ""
       set -g @prefix_highlight_copy_mode_attr "fg=brightcyan,bg=black,bold"
-
-      set -g @resurrect-processes '\
-        "~nvim->nvim" \
-        "~tig->tig" \
-        "~kak->kak" \
-      '
 
       run-shell ${pain-control.rtp}
       run-shell ${sensible.rtp}

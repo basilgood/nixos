@@ -1,0 +1,26 @@
+self: super:
+with super;
+
+let
+  # plugins = callPackage ./plugins/default.nix { };
+  customNeovim = neovim.override {
+  withNodeJs = true;
+  # configure = {
+	  # customRC = ''
+		  # packages.myVimPackage = with pkgs.vimPlugins; {
+			  # start = [ vinegar vim-nix ];
+			  # opt = [ coc-nvim ];
+			  # '';
+  # };
+  # };
+  };
+in {
+  neovim2 = stdenv.mkDerivation {
+    name = "neovim2";
+    buildCommand = ''
+      mkdir -p $out/bin
+      ln -s ${customNeovim}/bin/nvim $out/bin/vi
+    '';
+
+  };
+}

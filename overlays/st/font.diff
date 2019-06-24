@@ -1,0 +1,22 @@
+diff --git a/config.def.h b/config.def.h
+index 482901e..5352f43 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -5,7 +5,7 @@
+  *
+  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
+  */
+-static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
++static char *font = "DejaVuSansMono Nerd Font:pixelsize=14:antialias=true:autohint=true";
+ static int borderpx = 2;
+
+ /*
+@@ -63,7 +63,7 @@
+ static int bellvolume = 0;
+
+ /* default TERM value */
+-char *termname = "st-256color";
++char *termname = "xterm-256color";
+
+ /*
+  * spaces per tab

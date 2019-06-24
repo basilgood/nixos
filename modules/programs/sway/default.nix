@@ -30,8 +30,11 @@ in {
     programs.sway = {
       extraPackages = (with pkgs; [
         glib
+        arc-theme
+        arc-icon-theme
         paper-icon-theme
         nordic
+        nordic-polar
         xwayland
         android-udev-rules
         jmtpfs
