@@ -1,5 +1,4 @@
-{ buildEnv, makeWrapper, lib, buildPythonPackage, fetchPypi, pythonPackages
-, fetchurl, cargo, rustc }:
+{ buildEnv, makeWrapper, lib, buildPythonPackage, fetchPypi, pythonPackages, semaphore }:
 let
   customPackages = with pythonPackages; {
     pytest = pytest.overridePythonAttrs (old: rec {
@@ -182,14 +181,13 @@ in (with pythonPackages;
       (buildPythonPackage rec {
         pname = "semaphore";
         version = "0.4.42";
-        src = fetchurl {
-          url =
-            "https://files.pythonhosted.org/packages/b5/50/cbcc85df1b4432d493d985c8f347d6026d468ebcf159f0874d0c81169446/semaphore-0.4.42.zip";
+
+        src = fetchPypi {
+          inherit pname version;
+          extension = "zip";
           sha256 = "0z7z1j6qn2k14lyqkdrwvvv531zyfdc0zc3g7b2d20mjgcvsxgb0";
         };
-        doCheck = false;
-        format = "wheel";
-        python = "py27";
+        nativeBuildInputs = [semaphore];
         propagatedBuildInputs = [ milksnake ];
       })
     ];
