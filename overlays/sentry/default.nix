@@ -1,13 +1,9 @@
-self: super: {
-  sentry = super.callPackage ./sentry.nix {
-    inherit (super.python27.pkgs) buildPythonPackage fetchPypi;
-    pythonPackages = super.python27.pkgs;
-    semaphore = super.callPackage ./semaphore.nix {
-      inherit (self) rustPlatform fetchFromGitHub cmake pkgconfig openssl bash;
-      python = super.python27;
-      geolite2-city = super.callPackage ./geolite2-city.nix {
-        inherit (super) stdenv fetchurl gzip;
-      };
-    };
-  };
-}
+self: super:
+let
+  callPackage = (super.python27.override {
+    packageOverrides = (pyton-self: python-super: {
+      semaphore = python-super.callPackage ./semaphore.nix { };
+      pkg-config = super.pkgconfig;
+    });
+  }).pkgs.callPackage;
+in { sentry = callPackage ./sentry.nix { }; }
