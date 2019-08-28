@@ -1,7 +1,9 @@
 { buildEnv, makeWrapper, lib, buildPythonPackage, fetchPypi, pytest, attrs, py
 , setuptools, six, more-itertools, atomicwrites, funcsigs, pluggy
 , djangorestframework, parsimonious, redis, ua-parser, setproctitle, enum34
-, cryptography, lxml, cssselect, cssutils, semaphore }:
+, cryptography, lxml, cssselect, cssutils, semaphore, dateutil, requests
+, pytestrunner, python-utils, sentry-sdk, jmespath, docutils, urllib3, zlib
+, pillow, olefile, msgpack, unidiff, httplib2, mistune }:
 let
   customPackages = {
     pytest = pytest.overridePythonAttrs (old: rec {
@@ -38,6 +40,39 @@ let
       src = fetchPypi {
         inherit pname version;
         sha256 = "0misvia78c14y07zs5xsb9lv54q0v217jpaindrmhhw4wiryal3y";
+      };
+      doCheck = false;
+      propagatedBuildInputs = [ ];
+    });
+
+    redis = buildPythonPackage rec {
+      pname = "redis";
+      version = "2.10.3";
+
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "1701qjwn4n05q90fdg4bsg96s27xf5s4hsb4gxhv3xk052q3gyx4";
+      };
+      doCheck = false;
+    };
+
+    pillow = pillow.overridePythonAttrs (old: rec {
+      pname = "Pillow";
+      version = "4.2.1";
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "0wq0fiw964bj5rdmw66mhbfsjnmb13bcdr42krpk2ig5f1cgc967";
+      };
+      doCheck = false;
+      propagatedBuildInputs = [ olefile ];
+    });
+
+    six = six.overridePythonAttrs (old: rec {
+      pname = "six";
+      version = "1.10.0";
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "1scqzwc51c875z23phj48gircqjgnn3af8zy2izjwmnlxrxsgs3h";
       };
       doCheck = false;
       propagatedBuildInputs = [ ];
@@ -119,7 +154,7 @@ in buildPythonPackage rec {
         sha256 = "1sjqia19dap042idbdibyqa951gck64jqgbxp78ammgxcnnaq499";
       };
       doCheck = false;
-      propagatedBuildInputs = [ redis ];
+      propagatedBuildInputs = [ customPackages.redis ];
     })
 
     (ua-parser.overridePythonAttrs (old: rec {
@@ -180,5 +215,135 @@ in buildPythonPackage rec {
     customPackages.django
 
     semaphore
+
+    (buildPythonPackage rec {
+      pname = "qrcode";
+      version = "5.3";
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "0kljfrfq0c2rmxf8am57333ia41kd0snbm2rnqbdy816hgpcq5a1";
+      };
+      doCheck = false;
+      propagatedBuildInputs = [ six ];
+    })
+
+    (buildPythonPackage rec {
+      pname = "croniter";
+      version = "0.3.30";
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "1405lnw9cwpf8q0yvx2zq9jdf80n8i69gny6vqy6r0gplyrxx2jk";
+      };
+      doCheck = false;
+      propagatedBuildInputs = [ dateutil ];
+    })
+
+    (buildPythonPackage rec {
+      pname = "percy";
+      version = "2.0.2";
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "07821yabrqjyg0z45xlm4vz4hgm4gs7p7mqa3hi5ryh1qhnn2f32";
+      };
+      doCheck = false;
+      propagatedBuildInputs = [ requests ];
+    })
+
+    (buildPythonPackage rec {
+      pname = "querystring_parser";
+      version = "1.2.4";
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "0qlar8a0wa003hm2z6wcpb625r6vjj0a70rsni9h8lz0zwfcwkv4";
+      };
+      doCheck = false;
+      propagatedBuildInputs = [ six ];
+    })
+
+    (buildPythonPackage rec {
+      pname = "progressbar2";
+      version = "3.10.0";
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "0h506iz9mz9qfxdq9xp1ccq5gkb1mn5i98d6wbgdiamxarzvhzyd";
+      };
+      doCheck = false;
+      propagatedBuildInputs = [ pytestrunner python-utils ];
+    })
+
+    (buildPythonPackage rec {
+      pname = "honcho";
+      version = "1.0.1";
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "0vpadk37y27m98x9lk151k96vp319w7jv8f6hdr7fdz3s8m412f1";
+      };
+      doCheck = false;
+    })
+
+    (buildPythonPackage rec {
+      pname = "botocore";
+      version = "1.5.70";
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "1wngbi4n9gchdrz65g5n9ny3b3j2m2gxbl5ms601d9sgc5aixvma";
+      };
+      doCheck = false;
+      propagatedBuildInputs = [ dateutil jmespath docutils urllib3 ];
+    })
+
+    sentry-sdk
+
+    customPackages.redis
+
+    customPackages.pillow
+
+    (buildPythonPackage rec {
+      pname = "django-jsonfield";
+      version = "0.9.13";
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "0hwfg8ccqg2p86j57mql8iid3x38s5ppzpabbz6cb39zaka3vbhj";
+      };
+      doCheck = false;
+    })
+
+    msgpack
+    unidiff
+
+    (buildPythonPackage rec {
+      pname = "django-templatetag-sugar";
+      version = "1.0";
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "0plss9p32g8nb0sa3v679pvhiqxz3071k1dk53rlq5vckxa31xp9";
+      };
+      doCheck = false;
+    })
+
+    (buildPythonPackage rec {
+      pname = "django-picklefield";
+      version = "0.3.2";
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "1qlsbp3798ii68ny9zlz2ppkna00jf7i4hmjal3p8433gi18md7s";
+      };
+      doCheck = false;
+    })
+
+    (buildPythonPackage rec {
+      pname = "oauth2";
+      version = "1.5.211";
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "08ad9jc0sjrl5q5cac1asyz41185pd673py41xn4kym19mkqz8w2";
+      };
+      doCheck = false;
+      propagatedBuildInputs = [ httplib2 ];
+    })
+
+    mistune
+    customPackages.six
+
   ];
 }

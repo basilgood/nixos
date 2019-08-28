@@ -20,7 +20,7 @@ buildPythonPackage rec {
       fetchSubmodules = true;
     };
     sourceRoot = "source/cabi";
-    cargoSha256 = "1s3hkf31zqkz7ni72b1kjq6i3626wqxbmncngf95w90w0kl4yhgh";
+    cargoSha256 = "0723h8qcbg6yqsmxw4wmbdvq5jf70h8g0xminar06p0hrz4l3sx3";
     nativeBuildInputs = [ pkg-config ];
     buildInputs = [ openssl ];
     postInstall = ''
@@ -36,8 +36,9 @@ buildPythonPackage rec {
 
   preBuild = ''
     ls -al ${native}
-    mkdir -p rust/target/release
-    cp ${native}/lib/libsemaphore.so rust/target/release/semaphore.so
+    mkdir -p rust/target/release rust/include
+    cp ${native}/lib/libsemaphore.so rust/target/release/libsemaphore.so
+    cp ${native}/include/semaphore.h rust/include/semaphore.h
     ls -al rust/target/release
   '';
   doCheck = false;
