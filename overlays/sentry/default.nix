@@ -1,9 +1,11 @@
 self: super:
+
 let
-  callPackage = (super.python27.override {
-    packageOverrides = (pyton-self: python-super: {
-      semaphore = python-super.callPackage ./semaphore.nix { };
-      pkg-config = super.pkgconfig;
-    });
-  }).pkgs.callPackage;
-in { sentry = callPackage ./sentry.nix { }; }
+  python = super.python27.override {
+    packageOverrides = (python-self: python-super:
+      {
+        semaphore = python-super.callPackage ./semaphore.nix { };
+        pkg-config = super.pkgconfig;
+      } // (import ./overrides.nix) python-self python-super);
+  };
+in { sentry = python.pkgs.callPackage ./sentry.nix { }; }
