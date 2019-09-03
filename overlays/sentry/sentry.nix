@@ -2,7 +2,7 @@
 , parsimonious, redis, ua-parser, setproctitle, enum34, cryptography, lxml
 , cssselect, cssutils, semaphore, dateutil, requests, pytestrunner, python-utils
 , sentry-sdk, jmespath, docutils, urllib3, zlib, msgpack, unidiff, httplib2, six
-, pytest, django, pillow, mistune }:
+, pytest, django, pillow, mistune, py }:
 
 buildPythonPackage rec {
   pname = "sentry";

@@ -1,15 +1,16 @@
 self: super:
 let
-  six_1_10 = with super; six.overridePythonAttrs (old: rec {
-    pname = "six";
-    version = "1.10.0";
-    src = fetchPypi {
-      inherit pname version;
-      sha256 = "1scqzwc51c875z23phj48gircqjgnn3af8zy2izjwmnlxrxsgs3h";
-    };
-    doCheck = false;
-    propagatedBuildInputs = [ ];
-  });
+  six_1_10 = with super;
+    six.overridePythonAttrs (old: rec {
+      pname = "six";
+      version = "1.10.0";
+      src = fetchPypi {
+        inherit pname version;
+        sha256 = "1scqzwc51c875z23phj48gircqjgnn3af8zy2izjwmnlxrxsgs3h";
+      };
+      doCheck = false;
+      propagatedBuildInputs = [ ];
+    });
 in with super; {
   django = (buildPythonPackage rec {
     pname = "Django";
@@ -57,9 +58,9 @@ in with super; {
 
   pytest = pytest.overridePythonAttrs (old: rec {
     src = fetchPypi {
-      version = "3.5.0";
+      version = "3.6.0";
       pname = "pytest";
-      sha256 = "1q832zd07zak2lyxbycxjydh0jp7y3hvawjqzlvra6aghz8r3r7s";
+      sha256 = "0bdfazvjjbxssqzyvkb3m2x2in7xv56ipr899l00s87k7815sm9r";
     };
 
     propagatedBuildInputs = [
@@ -80,6 +81,12 @@ in with super; {
         };
       }))
     ];
+    doCheck = false;
+  });
+
+  whoosh = whoosh.overridePythonAttrs (old: rec {
+    pname = "Whoosh";
+    version = "2.7.4";
     doCheck = false;
   });
 
