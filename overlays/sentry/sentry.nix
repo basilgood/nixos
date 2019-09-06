@@ -2,7 +2,7 @@
 , parsimonious, redis, ua-parser, setproctitle, enum34, cryptography, lxml
 , cssselect, cssutils, semaphore, dateutil, requests, pytestrunner, python-utils
 , sentry-sdk, jmespath, docutils, urllib3, zlib, msgpack, unidiff, httplib2, six
-, pytest, django, pillow, mistune, py }:
+, pytest, django, pillow, mistune, botocore, boto3 }:
 
 buildPythonPackage rec {
   pname = "sentry";
@@ -186,17 +186,6 @@ buildPythonPackage rec {
         sha256 = "0vpadk37y27m98x9lk151k96vp319w7jv8f6hdr7fdz3s8m412f1";
       };
       doCheck = false;
-    })
-
-    (buildPythonPackage rec {
-      pname = "botocore";
-      version = "1.5.70";
-      src = fetchPypi {
-        inherit pname version;
-        sha256 = "1wngbi4n9gchdrz65g5n9ny3b3j2m2gxbl5ms601d9sgc5aixvma";
-      };
-      doCheck = false;
-      propagatedBuildInputs = [ dateutil jmespath docutils urllib3 ];
     })
 
     sentry-sdk
