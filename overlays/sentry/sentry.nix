@@ -2,7 +2,8 @@
 , parsimonious, redis, ua-parser, setproctitle, enum34, cryptography, lxml
 , cssselect, cssutils, semaphore, dateutil, requests, pytestrunner, python-utils
 , sentry-sdk, jmespath, docutils, urllib3, zlib, msgpack, unidiff, httplib2, six
-, pytest, django, pillow, mistune, botocore, boto3 }:
+, pytest, django, pillow, mistune, botocore, boto3, progressbar2
+, querystring_parser, python-u2flib-server, qrcode }:
 
 buildPythonPackage rec {
   pname = "sentry";
@@ -13,10 +14,13 @@ buildPythonPackage rec {
     python = "py27";
     sha256 = "c326fe1766f10e71cff813d0dd1ea120abbd94af720b7c0a56cffef8c041b3e6";
   };
+
   format = "wheel";
 
   propagatedBuildInputs = [
     djangorestframework
+
+    six
 
     (buildPythonPackage rec {
       pname = "mmh3";
@@ -84,16 +88,7 @@ buildPythonPackage rec {
 
     setproctitle
 
-    (buildPythonPackage rec {
-      pname = "python-u2flib-server";
-      version = "4.0.1";
-      src = fetchPypi {
-        inherit pname version;
-        sha256 = "02q0zwfkwmvb8cdymkvi7zbrwlkab92kqz8s4v70cys003z2a10n";
-      };
-      doCheck = false;
-      propagatedBuildInputs = [ six enum34 cryptography lxml ];
-    })
+    python-u2flib-server
 
     pytest
 
@@ -122,17 +117,7 @@ buildPythonPackage rec {
     django
 
     semaphore
-
-    (buildPythonPackage rec {
-      pname = "qrcode";
-      version = "5.3";
-      src = fetchPypi {
-        inherit pname version;
-        sha256 = "0kljfrfq0c2rmxf8am57333ia41kd0snbm2rnqbdy816hgpcq5a1";
-      };
-      doCheck = false;
-      propagatedBuildInputs = [ six ];
-    })
+    qrcode
 
     (buildPythonPackage rec {
       pname = "croniter";
@@ -147,35 +132,13 @@ buildPythonPackage rec {
 
     (buildPythonPackage rec {
       pname = "percy";
-      version = "2.0.2";
+      version = "1.1.2";
       src = fetchPypi {
         inherit pname version;
-        sha256 = "07821yabrqjyg0z45xlm4vz4hgm4gs7p7mqa3hi5ryh1qhnn2f32";
+        sha256 = "1ra7wanlkchpxhjzhx457c30db68x63qjmwizjg0phlc5h527m1k";
       };
       doCheck = false;
       propagatedBuildInputs = [ requests ];
-    })
-
-    (buildPythonPackage rec {
-      pname = "querystring_parser";
-      version = "1.2.4";
-      src = fetchPypi {
-        inherit pname version;
-        sha256 = "0qlar8a0wa003hm2z6wcpb625r6vjj0a70rsni9h8lz0zwfcwkv4";
-      };
-      doCheck = false;
-      propagatedBuildInputs = [ six ];
-    })
-
-    (buildPythonPackage rec {
-      pname = "progressbar2";
-      version = "3.10.0";
-      src = fetchPypi {
-        inherit pname version;
-        sha256 = "0h506iz9mz9qfxdq9xp1ccq5gkb1mn5i98d6wbgdiamxarzvhzyd";
-      };
-      doCheck = false;
-      propagatedBuildInputs = [ pytestrunner python-utils ];
     })
 
     (buildPythonPackage rec {
@@ -239,7 +202,9 @@ buildPythonPackage rec {
     })
 
     mistune
-    six
+    botocore
+    progressbar2
+    querystring_parser
 
   ];
 }

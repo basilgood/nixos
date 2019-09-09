@@ -17,6 +17,7 @@ with super; rec {
       inherit pname version;
       sha256 = "1scqzwc51c875z23phj48gircqjgnn3af8zy2izjwmnlxrxsgs3h";
     };
+    checkPhase = false;
   });
 
   pytest = super.pytest.overridePythonAttrs (old: rec {
@@ -146,12 +147,13 @@ with super; rec {
       sha256 = "1pi375z0c0gv7ripidh7hh4dlc1b25mc2n4diai6h7mjplwbk6wh";
     };
   });
+
   idna = super.idna.overridePythonAttrs (old: rec {
     pname = "idna";
-    version = "2.0";
+    version = "2.7";
     src = fetchPypi {
       inherit pname version;
-      sha256 = "0frxgmgi234lr9hylg62j69j4ik5zhg0wz05w5dhyacbjfnrl68n";
+      sha256 = "05jam7d31767dr12x0rbvvs8lxnpb1mhdb2zdlfxgh83z6k3hjk8";
     };
   });
 
@@ -209,16 +211,70 @@ with super; rec {
       sha256 = "07c3364s071p3w6vgz4c7s0b56dqhi2vpbxbx4sjps4jyvq0smvd";
     };
   });
-  chardet = super.chardet.overridePythonAttrs (old: rec {
-    # pname = "chardet";
-    # version = "3.0.4";
-    #
-    # src = fetchPypi {
-    #   inherit pname version;
-    #   sha256 = "1fyraha235vnpqfv4mqz0ry73gxk2j2yw9yrvng8ld43qpkk4y2g";
-    # };
-    # patches = [ ];
-    doCheck = false;
+
+  requests = super.requests.overridePythonAttrs (old: rec {
+    pname = "requests";
+    version = "2.14.0";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "1hi2m3r1sdvckbm42sqsq8ldp5snlxjsmx7ggjnnnjnbb627fkwc";
+    };
   });
 
+  packaging = super.packaging.overridePythonAttrs (old: rec {
+    pname = "packaging";
+    version = "14.0";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "18hyvrzm24sksqpbs1486fh52ca0il3bd5kp8khmj7wld36nxww9";
+    };
+  });
+
+  chardet = super.chardet.overridePythonAttrs (old: rec { doCheck = false; });
+
+  sphinx = super.sphinx.overridePythonAttrs (old: rec {
+    propagatedBuildInputs = old.propagatedBuildInputs ++ [ packaging ];
+  });
+
+  progressbar2 = super.progressbar2.overridePythonAttrs (old: rec {
+    pname = "progressbar2";
+    version = "3.10.0";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "0h506iz9mz9qfxdq9xp1ccq5gkb1mn5i98d6wbgdiamxarzvhzyd";
+    };
+    postPatch = false;
+    checkPhase = false;
+  });
+
+  python-u2flib-server = buildPythonPackage rec {
+    pname = "python-u2flib-server";
+    version = "4.0.1";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "02q0zwfkwmvb8cdymkvi7zbrwlkab92kqz8s4v70cys003z2a10n";
+    };
+    doCheck = false;
+    propagatedBuildInputs = [ six enum34 cryptography lxml ];
+  };
+
+  querystring_parser = buildPythonPackage rec {
+    pname = "querystring_parser";
+    version = "1.2.4";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "0qlar8a0wa003hm2z6wcpb625r6vjj0a70rsni9h8lz0zwfcwkv4";
+    };
+    doCheck = false;
+    propagatedBuildInputs = [ six ];
+  };
+
+  qrcode = super.qrcode.overridePythonAttrs (old: rec {
+    pname = "qrcode";
+    version = "5.3";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "0kljfrfq0c2rmxf8am57333ia41kd0snbm2rnqbdy816hgpcq5a1";
+    };
+  });
 }

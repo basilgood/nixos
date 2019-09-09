@@ -1,5 +1,5 @@
 { rustPlatform, fetchFromGitHub, fetchPypi, pkg-config, cmake, openssl
-, buildPythonPackage, milksnake, setuptools_scm, }:
+, buildPythonPackage, milksnake, setuptools_scm }:
 
 buildPythonPackage rec {
   pname = "semaphore";
