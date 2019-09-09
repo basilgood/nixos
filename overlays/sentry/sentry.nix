@@ -3,7 +3,8 @@
 , cssselect, cssutils, semaphore, dateutil, requests, pytestrunner, python-utils
 , sentry-sdk, jmespath, docutils, urllib3, zlib, msgpack, unidiff, httplib2, six
 , pytest, django, pillow, mistune, botocore, boto3, progressbar2
-, querystring_parser, python-u2flib-server, qrcode }:
+, querystring_parser, python-u2flib-server, qrcode, memcached, statsd, click
+, redis-py-cluster, strict-rfc3339, psycopg2-binary }:
 
 buildPythonPackage rec {
   pname = "sentry";
@@ -19,8 +20,6 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [
     djangorestframework
-
-    six
 
     (buildPythonPackage rec {
       pname = "mmh3";
@@ -167,6 +166,8 @@ buildPythonPackage rec {
       doCheck = false;
     })
 
+    six
+
     msgpack
     unidiff
 
@@ -205,6 +206,12 @@ buildPythonPackage rec {
     botocore
     progressbar2
     querystring_parser
+    memcached
+    statsd
+    click
+    redis-py-cluster
+    strict-rfc3339
+    psycopg2-binary
 
   ];
 }

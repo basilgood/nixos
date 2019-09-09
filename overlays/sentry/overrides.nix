@@ -15,9 +15,8 @@ with super; rec {
     version = "1.10.0";
     src = fetchPypi {
       inherit pname version;
-      sha256 = "1scqzwc51c875z23phj48gircqjgnn3af8zy2izjwmnlxrxsgs3h";
+      sha256 = "0snmb8xffb3vsma0z67i0h0w2g2dy0p3gsgh9gi4i0kgc5l8spqh";
     };
-    checkPhase = false;
   });
 
   pytest = super.pytest.overridePythonAttrs (old: rec {
@@ -49,7 +48,7 @@ with super; rec {
     propagatedBuildInputs = [ ];
   });
 
-  redis = buildPythonPackage rec {
+  redis = super.redis.overridePythonAttrs (old: rec {
     pname = "redis";
     version = "2.10.3";
 
@@ -57,8 +56,7 @@ with super; rec {
       inherit pname version;
       sha256 = "1701qjwn4n05q90fdg4bsg96s27xf5s4hsb4gxhv3xk052q3gyx4";
     };
-    doCheck = false;
-  };
+  });
 
   djangorestframework = super.djangorestframework.overridePythonAttrs
     (old: rec {
@@ -214,10 +212,10 @@ with super; rec {
 
   requests = super.requests.overridePythonAttrs (old: rec {
     pname = "requests";
-    version = "2.14.0";
+    version = "2.20.1";
     src = fetchPypi {
       inherit pname version;
-      sha256 = "1hi2m3r1sdvckbm42sqsq8ldp5snlxjsmx7ggjnnnjnbb627fkwc";
+      sha256 = "0qzj6cgv3k9wyj7wlxgz7xq0cfg4jbbkfm24pp8dnhczwl31527a";
     };
   });
 
@@ -277,4 +275,64 @@ with super; rec {
       sha256 = "0kljfrfq0c2rmxf8am57333ia41kd0snbm2rnqbdy816hgpcq5a1";
     };
   });
+
+  memcached = super.memcached.overridePythonAttrs (old: rec {
+    pname = "python-memcached";
+    version = "1.53";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "0s48xy0mccdl1lqzjnh2rk5cqmkbwsm66ywa2sildfwpv5qi7xxw";
+    };
+  });
+
+  statsd = super.statsd.overridePythonAttrs (old: rec {
+    pname = "statsd";
+    version = "3.1";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "1vi8xx8hrgyhgcw3d3yc7bh4vfc48swlm0xwfp1994xf6gmmzbpv";
+    };
+  });
+
+  click = super.click.overridePythonAttrs (old: rec {
+    pname = "click";
+    version = "6.7";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "02qkfpykbq35id8glfgwc38yc430427yd05z1wc5cnld8zgicmgi";
+    };
+  });
+
+  redis-py-cluster = buildPythonPackage rec {
+    pname = "redis-py-cluster";
+    version = "1.3.4";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "0n7k4nqdryz1x34f5axbhj7xl6s1b6hlav02491nzy047bgdv29i";
+    };
+    doCheck = false;
+    propagatedBuildInputs = [ redis ];
+  };
+
+  cssutils = super.cssutils.overridePythonAttrs (old: rec {
+    pname = "cssutils";
+    version = "0.9.9";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "139yfm9yz9k33kgqw4khsljs10rkhhxyywbq9i82bh2r31cil1pp";
+      extension = "zip";
+    };
+  });
+
+  psycopg2-binary = buildPythonPackage rec {
+    pname = "psycopg2-binary";
+    version = "2.7.4";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "1myrbdbjzm2gd3dfscri6irqv9mqjqfh9hgkbvm72yh34gw8hkyy";
+    };
+    doCheck = false;
+    propagatedBuildInputs = [ redis ];
+  };
+
 }
