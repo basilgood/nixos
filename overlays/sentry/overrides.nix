@@ -1,4 +1,4 @@
-self: super:
+self: super: pkgs:
 with super; rec {
 
   pluggy = super.pluggy.overridePythonAttrs (old: rec {
@@ -332,7 +332,38 @@ with super; rec {
       sha256 = "1myrbdbjzm2gd3dfscri6irqv9mqjqfh9hgkbvm72yh34gw8hkyy";
     };
     doCheck = false;
-    propagatedBuildInputs = [ redis ];
+    nativeBuildInputs = [ pkgs.postgresql ];
   };
+
+  celery = super.celery.overridePythonAttrs (old: rec {
+    pname = "celery";
+    version = "3.1.8";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "1fdvfahb48187gw973wj7vfrx94632ja45l8dylvlmhn5smck1h7";
+    };
+  });
+
+  pycrypto = super.pycrypto.overridePythonAttrs (old: rec {
+    pname = "pycrypto";
+    version = "2.6.1";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "0g0ayql5b9mkjam8hym6zyg6bv77lbh66rv1fyvgqb17kfc1xkpj";
+    };
+  });
+
+  sshpubkeys = super.sshpubkeys.overridePythonAttrs (old: rec {
+    pname = "sshpubkeys";
+    version = "2.2.0";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "0r4kpwzmg96a2x56pllik7dmc3fnqk189v3sfgsi07q2ryrhr6xm";
+    };
+    nativeBuildInputs = [ pycrypto ];
+  });
+  #
+  # s3transfer = super.s3transfer.overridePythonAttrs
+  #   (old: rec { propagatedBuildInputs = [ ]; });
 
 }

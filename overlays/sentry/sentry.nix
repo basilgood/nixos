@@ -4,7 +4,7 @@
 , sentry-sdk, jmespath, docutils, urllib3, zlib, msgpack, unidiff, httplib2, six
 , pytest, django, pillow, mistune, botocore, boto3, progressbar2
 , querystring_parser, python-u2flib-server, qrcode, memcached, statsd, click
-, redis-py-cluster, strict-rfc3339, psycopg2-binary }:
+, redis-py-cluster, strict-rfc3339, psycopg2-binary, celery }:
 
 buildPythonPackage rec {
   pname = "sentry";
@@ -212,6 +212,7 @@ buildPythonPackage rec {
     redis-py-cluster
     strict-rfc3339
     psycopg2-binary
+    celery
 
   ];
 }
