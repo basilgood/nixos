@@ -337,10 +337,10 @@ with super; rec {
 
   celery = super.celery.overridePythonAttrs (old: rec {
     pname = "celery";
-    version = "3.1.8";
+    version = "3.1.10";
     src = fetchPypi {
       inherit pname version;
-      sha256 = "1fdvfahb48187gw973wj7vfrx94632ja45l8dylvlmhn5smck1h7";
+      sha256 = "0dixjbjbqaz0ksv4gwlcyy5787gca7ppip871vhj1nrrshbjwa8c";
     };
   });
 
@@ -355,15 +355,49 @@ with super; rec {
 
   sshpubkeys = super.sshpubkeys.overridePythonAttrs (old: rec {
     pname = "sshpubkeys";
-    version = "2.2.0";
+    version = "1.2.2";
     src = fetchPypi {
       inherit pname version;
-      sha256 = "0r4kpwzmg96a2x56pllik7dmc3fnqk189v3sfgsi07q2ryrhr6xm";
+      sha256 = "1skk6s5sk2dyyvlv7d3z1jiw7pfm05d32hpjw3dsa5hlbpx8n6s3";
     };
     nativeBuildInputs = [ pycrypto ];
+    checkPhase = ''
+      pushd sshpubkeys/tests
+      nosetests -v unit/ functional/
+      popd
+    '';
   });
-  #
-  # s3transfer = super.s3transfer.overridePythonAttrs
-  #   (old: rec { propagatedBuildInputs = [ ]; });
 
+  aws-xray-sdk = super.aws-xray-sdk.overridePythonAttrs (old: rec {
+    pname = "aws-xray-sdk";
+    version = "0.91";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "0d4psi54adlwi7impi1g4y5mcx5lk7r8g8dfzsa3vrdngnadxy57";
+    };
+  });
+
+  s3transfer = super.s3transfer.overridePythonAttrs (old: rec {
+    pname = "s3transfer";
+    version = "0.1.11";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "0yfrfnf404cxzn3iswibqjxklsl0b1lwgqiml6pwiqj79a7zbwbn";
+    };
+    checkPhase = ''
+      pushd s3transfer/tests
+      nosetests -v unit/ functional/
+      popd
+    '';
+  });
+
+  aws-sam-translator = super.aws-sam-translator.overridePythonAttrs (old: rec {
+    pname = "aws-sam-translator";
+    version = "1.5.1";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "01yhs958vx0mm4ry57lp3w5lmizqn0xr80aymail212bhihdj7sf";
+    };
+    doCheck = false;
+  });
 }
