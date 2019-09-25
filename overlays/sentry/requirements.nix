@@ -2,7 +2,7 @@
 # See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -v -V python27 -e semaphore -E cargo -e psycopg2 -E postgresql -e confluent-kafka -E rdkafka -e pillow -E zlib.dev -E pkgconfig -E libjpeg -e lxml -E libxml2 -E libxslt -E nodejs -E yarn -E openssl -e cffi==1.11.5 -r requirements.txt
+#   pypi2nix -v -V python27 -e semaphore -E cargo -e psycopg2 -E postgresql -E nodejs -E yarn -E zlib -E pkgconfig -E libjpeg -e lxml -E libxml2 -E libxslt -E openssl -r requirements.txt -V python27 -W .
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -19,23 +19,9 @@ let
     inherit pkgs;
     inherit (pkgs) stdenv;
     python = pkgs.python27Full;
-    # patching pip so it does not try to remove files when running nix-shell
-    overrides =
-      self: super: {
-        bootstrapped-pip = super.bootstrapped-pip.overrideDerivation (old: {
-          patchPhase = (if builtins.hasAttr "patchPhase" old then old.patchPhase else "") + ''
-            if [ -e $out/${pkgs.python27Full.sitePackages}/pip/req/req_install.py ]; then
-              sed -i \
-                -e "s|paths_to_remove.remove(auto_confirm)|#paths_to_remove.remove(auto_confirm)|"  \
-                -e "s|self.uninstalled = paths_to_remove|#self.uninstalled = paths_to_remove|"  \
-                $out/${pkgs.python27Full.sitePackages}/pip/req/req_install.py
-            fi
-          '';
-        });
-      };
   };
 
-  commonBuildInputs = with pkgs; [ cargo postgresql rdkafka zlib.dev pkgconfig libjpeg libxml2 libxslt nodejs yarn openssl ];
+  commonBuildInputs = with pkgs; [ cargo postgresql nodejs yarn zlib pkgconfig libjpeg libxml2 libxslt openssl pythonPackages.vcversioner pythonPackages.pytestrunner];
   commonDoCheck = false;
 
   withPackages = pkgs':
@@ -263,10 +249,10 @@ let
     };
 
     "cffi" = python.mkDerivation {
-      name = "cffi-1.11.5";
+      name = "cffi-1.12.3";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/e7/a7/4cd50e57cc6f436f1cc3a7e8fa700ff9b8b4d471620629074913e3735fb2/cffi-1.11.5.tar.gz";
-        sha256 = "e90f17980e6ab0f3c2f3730e56d1fe9bcba1891eeea58966e89d352492cc74f4";
+        url = "https://files.pythonhosted.org/packages/93/1a/ab8c62b5838722f29f3daffcc8d4bd61844aa9b5f437341cc890ceee483b/cffi-1.12.3.tar.gz";
+        sha256 = "041c81822e9f84b1d9c401182e174996f0bae9991f33725d059b771744290774";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -309,25 +295,6 @@ let
         homepage = "http://github.com/mitsuhiko/click";
         license = "UNKNOWN";
         description = "A simple wrapper around optparse for powerful command line utilities.";
-      };
-    };
-
-    "confluent-kafka" = python.mkDerivation {
-      name = "confluent-kafka-0.11.5";
-      src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/bf/41/25a4e23a98df212e910aecd445d3b1ea37928ef857749a85365da7108b83/confluent-kafka-0.11.5.tar.gz";
-        sha256 = "bfb5807bfb5effd74f2cfe65e4e3e8564a9e72b25e099f655d8ad0d362a63b9f";
-};
-      doCheck = commonDoCheck;
-      buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [
-        self."enum34"
-        self."futures"
-      ];
-      meta = with pkgs.stdenv.lib; {
-        homepage = "https://github.com/confluentinc/confluent-kafka-python";
-        license = "UNKNOWN";
-        description = "Confluent's Apache Kafka client for Python";
       };
     };
 
@@ -404,10 +371,10 @@ let
     };
 
     "django" = python.mkDerivation {
-      name = "django-1.8.19";
+      name = "django-1.6.11";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/ad/da/980dbd68970fefbdf9c62faeed5da1d8ed49214ff3ea3991c2d233719b51/Django-1.8.19.tar.gz";
-        sha256 = "33d44a5cf9d333247a9a374ae1478b78b83c9b78eb316fc04adde62053b4c047";
+        url = "https://files.pythonhosted.org/packages/69/1a/a47b2efd22bf642d19d3dde71f82b29c5608bb96e140a38208bf813f9c3b/Django-1.6.11.tar.gz";
+        sha256 = "7e50e573e484435873b3515d7982d80093b2695aba17fd0ff024307454dc3a56";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -452,10 +419,10 @@ let
     };
 
     "django-picklefield" = python.mkDerivation {
-      name = "django-picklefield-1.0.0";
+      name = "django-picklefield-0.3.2";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/e8/69/232d78ef16cad8dd4c2f871b0f44d87bcde36ed6a90597416e903034600b/django-picklefield-1.0.0.tar.gz";
-        sha256 = "61e3ba7f6df82d8df9e6be3a8c55ef589eb3bf926c3d25d2b7949b07eae78354";
+        url = "https://files.pythonhosted.org/packages/9c/22/602e6d010248786d72b70c7ca16b0d19ec513897a39861a957a092a77b08/django-picklefield-0.3.2.tar.gz";
+        sha256 = "fab48a427c6310740755b242128f9300283bef159ffee42d3231a274c65d9ae2";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -483,11 +450,27 @@ let
       };
     };
 
-    "djangorestframework" = python.mkDerivation {
-      name = "djangorestframework-3.0.5";
+    "django-templatetag-sugar" = python.mkDerivation {
+      name = "django-templatetag-sugar-1.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/c0/c6/53b00976f53b82e20109b08398f2215fff09274a88ff9226eb713c361510/djangorestframework-3.0.5.tar.gz";
-        sha256 = "80c1690df1d9ed0d4f449f8378b08f00548838690d1a83ed901148a871145d27";
+        url = "https://files.pythonhosted.org/packages/95/45/0f2b31e4e86a9df1151c4c3a5f8ff1fb9bd882785d7c90ef1629fce37636/django-templatetag-sugar-1.0.tar.gz";
+        sha256 = "e9f630549f6c174cf328b385190e18bfe308f74dc7eca13458163d316ed29a5e";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://github.com/alex/django-templatetag-sugar/";
+        license = licenses.bsdOriginal;
+        description = "A library to make Django's template tags sweet.";
+      };
+    };
+
+    "djangorestframework" = python.mkDerivation {
+      name = "djangorestframework-2.4.8";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/71/e6/4ee6cf154c23f28e3302584eb302ffc3dbb51c27a2c9b1c503f21daa85ce/djangorestframework-2.4.8.tar.gz";
+        sha256 = "640b705ae7815ec60501631b7b611085e51c7f76607d90558bfe288f3f84b7aa";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -867,10 +850,10 @@ let
     };
 
     "msgpack" = python.mkDerivation {
-      name = "msgpack-0.6.1";
+      name = "msgpack-0.6.2";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/81/9c/0036c66234482044070836cc622266839e2412f8108849ab0bfdeaab8578/msgpack-0.6.1.tar.gz";
-        sha256 = "4008c72f5ef2b7936447dcb83db41d97e9791c83221be13d5e19db0796df1972";
+        url = "https://files.pythonhosted.org/packages/74/0a/de673c1c987f5779b65ef69052331ec0b0ebd22958bda77a8284be831964/msgpack-0.6.2.tar.gz";
+        sha256 = "ea3c2f859346fcd55fc46e96885301d9c2f7a36d453f5d8f2967840efa1e1830";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -985,16 +968,16 @@ let
     };
 
     "petname" = python.mkDerivation {
-      name = "petname-2.6";
+      name = "petname-2.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/8e/a5/348c90b3fb09d7bd76f7dacf1b92e251d75bfbe715006cb9b84eb23be1b1/petname-2.6.tar.gz";
-        sha256 = "981c31ef772356a373640d1bb7c67c102e0159eda14578c67a1c99d5b34c9e4c";
+        url = "https://files.pythonhosted.org/packages/d9/a7/aab8825075230b706b58d59fa23171cfa066ca62507242ff91270bb33fca/petname-2.0.tar.gz";
+        sha256 = "28a1af453ed004e1a17eea9cd97b9bdd1d9fead6e770a6b1f0bd46541042fed0";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
-        homepage = "https://launchpad.net/python-petname";
+        homepage = "https://launchpad.net/petname";
         license = "Apache2";
         description = "Generate human-readable, random object names";
       };
@@ -1069,10 +1052,10 @@ let
     };
 
     "psycopg2-binary" = python.mkDerivation {
-      name = "psycopg2-binary-2.8.3";
+      name = "psycopg2-binary-2.7.7";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/80/91/91911be01869fa877135946f928ed0004e62044bdd876c1e0f12e1b5fb90/psycopg2-binary-2.8.3.tar.gz";
-        sha256 = "cd37cc170678a4609becb26b53a2bc1edea65177be70c48dd7b39a1149cabd6e";
+        url = "https://files.pythonhosted.org/packages/dd/56/c22da10f5a725d61c58a185ec0f803aa2d384646ee8eb83d8ce88ed5edb1/psycopg2-binary-2.7.7.tar.gz";
+        sha256 = "b19e9f1b85c5d6136f5a0549abdc55dcbd63aba18b4f10d0d063eb65ef2c68b4";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -1129,6 +1112,25 @@ let
         homepage = "http://github.com/jpadilla/pyjwt";
         license = licenses.mit;
         description = "JSON Web Token implementation in Python";
+      };
+    };
+
+    "pyopenssl" = python.mkDerivation {
+      name = "pyopenssl-19.0.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/40/d0/8efd61531f338a89b4efa48fcf1972d870d2b67a7aea9dcf70783c8464dc/pyOpenSSL-19.0.0.tar.gz";
+        sha256 = "aeca66338f6de19d1aa46ed634c3b9ae519a64b458f8468aec688e7e3c20f200";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."cryptography"
+        self."six"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://pyopenssl.org/";
+        license = licenses.asl20;
+        description = "Python wrapper module around the OpenSSL library";
       };
     };
 
@@ -1246,17 +1248,16 @@ let
     };
 
     "python-u2flib-server" = python.mkDerivation {
-      name = "python-u2flib-server-5.0.0";
+      name = "python-u2flib-server-4.0.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/27/c7/ab44905ecf6300063a4754c9cd3997389fdf5c2c08644ed36c57800c2201/python-u2flib-server-5.0.0.tar.gz";
-        sha256 = "9b9044db13fe24abc7a07c2bdb4b7bb541ca275702f43ecbd0d9641c28bcc226";
+        url = "https://files.pythonhosted.org/packages/e7/d6/40a633fdd36669bca7753fad22a8b82351c62387fac9da3391b1702eae7d/python-u2flib-server-4.0.1.tar.gz";
+        sha256 = "160425fe00407b06ce261a7d3c455a6a529ed73f71cfea1b436b573e1dff000b";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [
         self."cryptography"
         self."enum34"
-        self."six"
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/Yubico/python-u2flib-server";
@@ -1481,10 +1482,10 @@ let
     };
 
     "semaphore" = python.mkDerivation {
-      name = "semaphore-0.4.45";
+      name = "semaphore-0.4.46";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/ea/58/d035780986cbe1405cdc37ab33d16942a90418fef9e350dfb12e332a8c16/semaphore-0.4.45.zip";
-        sha256 = "e0b9c81e8672135a200768107857382a5354c57d038bab875c45f996e25bfbc2";
+        url = "https://files.pythonhosted.org/packages/02/44/26146eb180ab2ff65b43115f968298b48eb2e992a3774047a71e7636c15a/semaphore-0.4.46.zip";
+        sha256 = "347af35364f2a7f00a993bea30c4bcb7da9a10d013d7ed2800e7cc089e2f69ce";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -1498,11 +1499,98 @@ let
       };
     };
 
-    "sentry-sdk" = python.mkDerivation {
-      name = "sentry-sdk-0.11.2";
+    "sentry" = python.mkDerivation {
+      name = "sentry-9.1.2";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/42/ae/3ba482ece5016937febe8ba4b9a7290429649ebbc4727175a072ba2d0eac/sentry-sdk-0.11.2.tar.gz";
-        sha256 = "b4edcb1296fee107439345d0f8b23432b8732b7e28407f928367d0a4a36301a9";
+        url = "https://files.pythonhosted.org/packages/8d/d8/542f590c702a80377419c670c57631bb432ffb85b8b03e4d29a7c06d6853/sentry-9.1.2.tar.gz";
+        sha256 = "44ddc093b35a76b7362652e732b0b9a4e644ec5c136285308e1b2aec6c21b03f";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."beautifulsoup"
+        self."boto3"
+        self."botocore"
+        self."celery"
+        self."cffi"
+        self."click"
+        self."croniter"
+        self."cssutils"
+        self."django"
+        self."django-crispy-forms"
+        self."django-jsonfield"
+        self."django-picklefield"
+        self."django-sudo"
+        self."django-templatetag-sugar"
+        self."djangorestframework"
+        self."email-reply-parser"
+        self."enum34"
+        self."exam"
+        self."functools32"
+        self."futures"
+        self."hiredis"
+        self."honcho"
+        self."ipaddress"
+        self."jsonschema"
+        self."kombu"
+        self."loremipsum"
+        self."lxml"
+        self."mistune"
+        self."mmh3"
+        self."mock"
+        self."msgpack"
+        self."oauth2"
+        self."parsimonious"
+        self."percy"
+        self."petname"
+        self."pillow"
+        self."progressbar2"
+        self."psycopg2-binary"
+        self."pyjwt"
+        self."pytest"
+        self."pytest-django"
+        self."pytest-html"
+        self."python-dateutil"
+        self."python-memcached"
+        self."python-openid"
+        self."python-u2flib-server"
+        self."pyyaml"
+        self."qrcode"
+        self."querystring-parser"
+        self."rb"
+        self."redis"
+        self."redis-py-cluster"
+        self."requests"
+        self."requests-oauthlib"
+        self."selenium"
+        self."semaphore"
+        self."sentry-sdk"
+        self."setproctitle"
+        self."simplejson"
+        self."six"
+        self."sqlparse"
+        self."statsd"
+        self."strict-rfc3339"
+        self."structlog"
+        self."symbolic"
+        self."toronado"
+        self."ua-parser"
+        self."unidiff"
+        self."urllib3"
+        self."uwsgi"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://sentry.io";
+        license = licenses.bsdOriginal;
+        description = "A realtime logging and aggregation server.";
+      };
+    };
+
+    "sentry-sdk" = python.mkDerivation {
+      name = "sentry-sdk-0.12.2";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/3c/02/2669f5064699e1630466cf02b2ec72dc1cf575cec37f6b21979017e2167a/sentry-sdk-0.12.2.tar.gz";
+        sha256 = "2529ab6f93914d01bcd80b1b16c15a025902350ab19af2033aa5ff797c1600ad";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -1752,7 +1840,7 @@ let
   localOverridesFile = ./requirements_override.nix;
   localOverrides = import localOverridesFile { inherit pkgs python; };
   commonOverrides = [
-    
+
   ];
   paramOverrides = [
     (overrides { inherit pkgs python; })

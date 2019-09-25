@@ -4,7 +4,9 @@
 , sentry-sdk, jmespath, docutils, urllib3, zlib, msgpack, unidiff, httplib2, six
 , pytest, django, pillow, mistune, botocore, boto3, progressbar2
 , querystring_parser, python-u2flib-server, qrcode, memcached, statsd, click
-, redis-py-cluster, strict-rfc3339, psycopg2-binary, celery }:
+, redis-py-cluster, strict-rfc3339, psycopg2-binary, celery, django-sudo
+, sqlparse, symbolic, pyyaml, selenium, django-crispy-forms, pytest-django
+, setuptools-scm, requests_oauthlib , simplejson, hiredis, petname, mock, structlog, BeautifulSoup, jsonschema, exam}:
 
 buildPythonPackage rec {
   pname = "sentry";
@@ -213,6 +215,22 @@ buildPythonPackage rec {
     strict-rfc3339
     psycopg2-binary
     celery
-
+    django-sudo
+    sqlparse
+    symbolic
+    pyyaml
+    selenium
+    boto3
+    django-crispy-forms
+    pytest-django
+    requests_oauthlib
+    simplejson
+    hiredis
+    petname
+    mock
+    structlog
+    BeautifulSoup
+    jsonschema
+    exam
   ];
 }

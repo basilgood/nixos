@@ -1,6 +1,26 @@
 self: super: pkgs:
 with super; rec {
 
+  amqp = super.amqp.overridePythonAttrs (old: rec {
+    pname = "amqp";
+    version = "1.4.9";
+
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "06n6q0kxhjnbfz3vn8x9yz09lwmn1xi9d6wxp31h5jbks0b4vsid";
+    };
+  });
+
+  anyjson = super.anyjson.overridePythonAttrs (old: rec {
+    pname = "anyjson";
+    version = "0.3.3";
+
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "1fjph4alvcscsl5d4b6qpv1yh31jy05jxi1l0xff7lws7j32v09p";
+    };
+  });
+
   pluggy = super.pluggy.overridePythonAttrs (old: rec {
     pname = "pluggy";
     version = "0.6.0";
@@ -30,10 +50,10 @@ with super; rec {
 
   pytestcov = super.pytestcov.overridePythonAttrs (old: rec {
     pname = "pytest-cov";
-    version = "2.4.0";
+    version = "2.6.0";
     src = fetchPypi {
       inherit pname version;
-      sha256 = "03c2qc42r4bczyw93gd7n0qi1h1jfhw7fnbhi33c3vp1hs81gm2k";
+      sha256 = "0qnpp9y3ygx4jk4pf5ad71fh2skbvnr6gl54m7rg5qysnx4g0q73";
     };
   });
 
@@ -45,16 +65,67 @@ with super; rec {
       sha256 = "0misvia78c14y07zs5xsb9lv54q0v217jpaindrmhhw4wiryal3y";
     };
     doCheck = false;
-    propagatedBuildInputs = [ ];
   });
+
+  django-sudo = (buildPythonPackage rec {
+    pname = "django-sudo";
+    version = "2.1.0";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "19j7001xwwilws46m34isrq885w43ida4k0q4jgz9z3x28032nip";
+    };
+    doCheck = false;
+  });
+
+  django-crispy-forms = (buildPythonPackage rec {
+    pname = "django-crispy-forms";
+    version = "1.4.0";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "040m50ypf7c97rx8zkglwci6acmb5zn7gri5yraw53gzplg57jfh";
+    };
+    doCheck = false;
+  });
+
+  pytest-django = (buildPythonPackage rec {
+    pname = "pytest-django";
+    version = "2.9.1";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "1mmc7zsz3dlhs6sx4sppkj1vgshabi362r1a8b8wpj1qfximpqcb";
+    };
+    doCheck = false;
+    buildInputs = [ setuptools-scm180 pytest ];
+  });
+
+  setuptools-scm180 = buildPythonPackage rec {
+    pname = "setuptools_scm";
+    version = "1.8.0";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "106f6y3g3ckmd3cdlflck5nn1mh98x7hnr9d71d2l1lx31d9mhbb";
+      extension = "zip";
+    };
+    doCheck = false;
+  };
+
+  setuptools-scm = buildPythonPackage rec {
+    pname = "setuptools-scm";
+    version = "3.3.3";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "1myrbdbjzm7gd5dfscri6irqv9mqjqfh9hgkbvm72yh34gw8hkyy";
+    };
+    doCheck = false;
+  };
 
   redis = super.redis.overridePythonAttrs (old: rec {
     pname = "redis";
-    version = "2.10.3";
+    version = "2.10.5";
 
     src = fetchPypi {
       inherit pname version;
-      sha256 = "1701qjwn4n05q90fdg4bsg96s27xf5s4hsb4gxhv3xk052q3gyx4";
+      sha256 = "0csmrkxb29x7xs9b51zplwkkq2hwnbh9jns1g85dykn5rxmaxysx";
     };
   });
 
@@ -155,51 +226,8 @@ with super; rec {
     };
   });
 
-  hypothesis = super.hypothesis.overridePythonAttrs (old: rec {
-    pname = "hypothesis";
-    version = "1.11.4";
-    src = fetchPypi {
-      inherit pname version;
-      sha256 = "00snccw4ybhfqzcjrpn8x6ggc7fmq78g58wcmhpdwfn4wkfvds0z";
-    };
-    postUnpack = "";
-
-    checkPhase = false;
-  });
-
-  cryptography = super.cryptography.overridePythonAttrs (old: rec {
-    pname = "cryptography";
-    version = "1.3.4";
-
-    src = fetchPypi {
-      inherit pname version;
-      sha256 = "1a85l548w5vvq3yhz0az7ajg2ijixzp6gagapw6wgrqvq28ghgs2";
-    };
-
-    propagatedBuildInputs = old.propagatedBuildInputs
-      ++ [ idna pyasn1 pyasn1-modules ];
-    doCheck = false;
-  });
-
-  cryptography_vectors = super.cryptography_vectors.overridePythonAttrs
-    (old: rec {
-      pname = "cryptography_vectors";
-      version = "1.3.4";
-
-      src = fetchPypi {
-        inherit pname version;
-        sha256 = "15h1iz2klnpb4f8djxy7cpbnyn3wbjp7bnj4pz6s7w6plghbq524";
-      };
-    });
-
-  botocore = super.botocore.overridePythonAttrs (old: rec {
-    pname = "botocore";
-    version = "1.5.70";
-    src = fetchPypi {
-      inherit pname version;
-      sha256 = "1wngbi4n9gchdrz65g5n9ny3b3j2m2gxbl5ms601d9sgc5aixvma";
-    };
-  });
+  cryptography =
+    super.cryptography.overridePythonAttrs (old: rec { checkPhase = false; });
 
   boto3 = super.boto3.overridePythonAttrs (old: rec {
     pname = "boto3";
@@ -207,6 +235,15 @@ with super; rec {
     src = fetchPypi {
       inherit pname version;
       sha256 = "07c3364s071p3w6vgz4c7s0b56dqhi2vpbxbx4sjps4jyvq0smvd";
+    };
+  });
+
+  botocore = super.botocore.overridePythonAttrs (old: rec {
+    pname = "botocore";
+    version = "1.5.70";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "1wngbi4n9gchdrz65g5n9ny3b3j2m2gxbl5ms601d9sgc5aixvma";
     };
   });
 
@@ -236,12 +273,13 @@ with super; rec {
 
   progressbar2 = super.progressbar2.overridePythonAttrs (old: rec {
     pname = "progressbar2";
-    version = "3.10.0";
+    version = "3.10.1";
     src = fetchPypi {
       inherit pname version;
-      sha256 = "0h506iz9mz9qfxdq9xp1ccq5gkb1mn5i98d6wbgdiamxarzvhzyd";
+      sha256 = "0s9ixxgvjs66d1hm57hywb5gxqr4clq7mwq7iiln878wwjrnzx0b";
     };
     postPatch = false;
+    checkInputs = old.checkInputs ++ [ hypothesis ];
     checkPhase = false;
   });
 
@@ -278,11 +316,12 @@ with super; rec {
 
   memcached = super.memcached.overridePythonAttrs (old: rec {
     pname = "python-memcached";
-    version = "1.53";
+    version = "1.59";
     src = fetchPypi {
       inherit pname version;
-      sha256 = "0s48xy0mccdl1lqzjnh2rk5cqmkbwsm66ywa2sildfwpv5qi7xxw";
+      sha256 = "0kvyapavbirk2x3n1jx4yb9nyigrj1s3x15nm3qhpvhkpqvqdqm2";
     };
+    propagatedBuildInputs = [ six ];
   });
 
   statsd = super.statsd.overridePythonAttrs (old: rec {
@@ -337,11 +376,13 @@ with super; rec {
 
   celery = super.celery.overridePythonAttrs (old: rec {
     pname = "celery";
-    version = "3.1.10";
+    version = "3.1.18";
     src = fetchPypi {
       inherit pname version;
-      sha256 = "0dixjbjbqaz0ksv4gwlcyy5787gca7ppip871vhj1nrrshbjwa8c";
+      sha256 = "1bry1qzb4gw0ni40w1pyzxl2d0rqbf688sdi13a5gz66f10gj909";
     };
+    doCheck = false;
+    checkInputs = [ ];
   });
 
   pycrypto = super.pycrypto.overridePythonAttrs (old: rec {
@@ -390,14 +431,125 @@ with super; rec {
       popd
     '';
   });
-
-  aws-sam-translator = super.aws-sam-translator.overridePythonAttrs (old: rec {
-    pname = "aws-sam-translator";
-    version = "1.5.1";
+  kombu = super.kombu.overridePythonAttrs (old: rec {
+    pname = "kombu";
+    version = "3.0.35";
     src = fetchPypi {
       inherit pname version;
-      sha256 = "01yhs958vx0mm4ry57lp3w5lmizqn0xr80aymail212bhihdj7sf";
+      sha256 = "09xpxpjz9nk8d14dj361dqdwyjwda3jlf1a7v6jif9wn2xm37ar2";
+    };
+    propagatedBuildInputs = old.propagatedBuildInputs ++ [ anyjson ];
+    checkInputs = old.checkInputs ++ [ redis ];
+  });
+
+  billiard = super.billiard.overridePythonAttrs (old: rec {
+    pname = "billiard";
+    version = "3.3.0.23";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "02wxsc6bhqvzh8j6w758kvgqbnj14l796mvmrcms8fgfamd2lak9";
+    };
+  });
+
+  sqlparse = super.sqlparse.overridePythonAttrs (old: rec {
+    pname = "sqlparse";
+    version = "0.1.19";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "1s2fvaxgh9kqzrd6iwy5h7i61ckn05plx9np13zby93z3hdbx5nq";
+    };
+  });
+
+  pyyaml = super.pyyaml.overridePythonAttrs (old: rec {
+    pname = "PyYAML";
+    version = "3.11";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "1s26125vfnskng58ym37xhwv8v0mm95b2cwbjfag8prfhy596v63";
+    };
+  });
+
+  requests_oauthlib = super.requests_oauthlib.overridePythonAttrs (old: rec {
+    pname = "requests-oauthlib";
+    version = "0.3.3";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "1s87y2qgwm9k9d0pqqqw9gq330wb2j197p359hm0vxgfwd6pnm9p";
+    };
+  });
+
+  oauthlib = super.oauthlib.overridePythonAttrs (old: rec {
+    pname = "oauthlib";
+    version = "3.1.0";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "12gqnabwck30gdlpwm6af3s28qm9p2yc7b1w8s4fk9ncbz1irr5y";
+    };
+  });
+
+  pyjwt = super.pyjwt.overridePythonAttrs (old: rec {
+    pname = "PyJWT";
+    version = "1.5.3";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "1rxsg14i33vm2i6lz0my628108c81k43v10n4h3p0gx62xdyf2sh";
     };
     doCheck = false;
+  });
+
+  simplejson = super.simplejson.overridePythonAttrs (old: rec {
+    pname = "simplejson";
+    version = "3.8.2";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "0zylrnax8b6r0ndgni4w9c599fi6wm9vx5g6k3ddqfj3932kk16m";
+    };
+  });
+
+  hiredis = (buildPythonPackage rec {
+    pname = "hiredis";
+    version = "0.1.6";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "0dba7fm5s8wf1mnsx6r0ffr786g50jgmh7llw4pign1i08m2dpxn";
+    };
+  });
+  petname = (buildPythonPackage rec {
+    pname = "petname";
+    version = "2.0";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "1l7y88858imxy2qscw77svm9y7fxkdxxk77agshy216h7r2sz898";
+    };
+  });
+  structlog = super.structlog.overridePythonAttrs (old: rec {
+    pname = "structlog";
+    version = "16.1.0";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "00dywyg3bqlkrmbrfrql21hpjjjkc4zjd6xxjyxyd15brfnzlkdl";
+    };
+    doCheck = false;
+  });
+
+  BeautifulSoup = (buildPythonPackage rec {
+    pname = "BeautifulSoup";
+    version = "3.2.1";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "1nqwzqllayjpv6xi8f2lri0h15xbrm8jmif8g6si3q0i250b933a";
+    };
+    propagatedBuildInputs = [ soupsieve ];
+    doCheck = false;
+  });
+
+  exam = (buildPythonPackage rec {
+    pname = "exam";
+    version = "0.10.6";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "128pw5rny5ilk5g80cvx52rpnb187ga5nn5h44kjjyqwpiza0b8c";
+    };
+    propagatedBuildInputs = [ mock nose ];
   });
 }

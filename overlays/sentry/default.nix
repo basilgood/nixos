@@ -1,7 +1,5 @@
 self: super:
-let sentry = (import ./requirements.nix { pkgs = self; });
-in sentry.mkDerivation {
-  name = "sentry-9.1.2";
-  src = ./.;
+#let python = import ./requirements.nix { pkgs = super; };
+#in { sentry = python.packages.sentry; }
+{}
 
-}
