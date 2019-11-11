@@ -1,28 +1,5 @@
 scriptencoding utf-8
 
-"""" get file size
-function! functions#getfilesize() abort
-  if &encoding ==# &fileencoding || &fileencoding ==# ''
-    let size = line2byte(line('$') + 1) - 1
-    if !&endofline
-      let size -= 1
-    endif
-  else
-    let size = getfsize(expand('%'))
-  endif
-
-  if size < 0
-    let size = 0
-  endif
-  for unit in ['B', 'KB', 'MB']
-    if size < 1024
-      return size . unit
-    endif
-    let size = size / 1024
-  endfor
-  return size . 'GB'
-endfunction
-
 """" large file (lifepillar)
 function! functions#large_file(name) abort
   let b:large_file = 1
@@ -111,6 +88,17 @@ function! functions#mkdirifnotexist() abort
   endif
 endfunction
 
+" netrw
+function! functions#innetrw() abort
+  nnoremap <buffer> D <Nop>
+  nmap <buffer> <right> <cr>
+  nmap <buffer> <left> -
+  nmap <buffer> J j<cr>
+  nmap <buffer> K k<cr>
+  nmap <buffer> qq :bn<bar>bd#<cr>
+  nmap <buffer> D !rm -rf
+endfunction
+
 """" tabline
 function! functions#tabline() abort
   let s = ''
@@ -137,28 +125,7 @@ function! functions#tabline() abort
   return s
 endfunction
 
-function! functions#changedfiles() abort
-  only
-  let status = system('git status -s | grep "^ \?\(M\|A\|UU\)" | sed "s/^.\{3\}//"')
-  let filenames = split(status, "\n")
-  exec 'edit ' . filenames[0]
-  for filename in filenames[1:]
-    exec 'e ' . filename
-  endfor
-endfunction
-
-" netrw
-function! functions#innetrw() abort
-  nnoremap <buffer> D <Nop>
-  nmap <buffer> <right> <cr>
-  nmap <buffer> <left> -
-  nmap <buffer> J j<cr>
-  nmap <buffer> K k<cr>
-  nmap <buffer> qq :bn<bar>bd#<cr>
-  nmap <buffer> D !rm -rf
-endfunction
-
-"""" visual select
+"""" visual select star search
 function! functions#get_selected_text() abort
   let tmp = @"
   normal! gvy
@@ -173,30 +140,6 @@ endfunction
 
 function! functions#get_search_pat() abort
   return functions#plain_text_pattern(functions#get_selected_text())
-endfunction
-
-" windows
-function! functions#nextwindow() abort
-  if winnr('$') == 1
-    silent! normal! ``z.
-  else
-    wincmd w
-  endif
-endfunction
-
-function! functions#previouswindowortab()
-  if winnr() > 1
-    wincmd W
-  else
-    tabprevious
-    execute winnr("$") . "wincmd w"
-  endif
-endfunction
-
-" tab completion
-function! functions#check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
 endfunction
 
 " submode
@@ -223,18 +166,21 @@ endfunction
 " lazy load plugins
 function! functions#packaddhandler(timer)
   execute 'packadd coc-nvim'
+  execute 'packadd neomake'
+  execute 'packadd actionmenu.nvim'
   execute 'packadd vim-fugitive'
+  execute 'packadd gv.vim'
+  execute 'packadd vim-conflicted'
   execute 'packadd vim-vinegar'
   execute 'packadd vim-dispatch'
-  execute 'packadd fzf'
-  execute 'packadd fzf-vim'
+  execute 'packadd skim'
+  execute 'packadd skim-vim'
   execute 'packadd vim-editorconfig'
   execute 'packadd vim-surround'
   execute 'packadd vim-repeat'
-  execute 'packadd tcomment'
+  execute 'packadd vim-commentary'
   execute 'packadd vim-easy-align'
-  execute 'packadd gv.vim'
-  execute 'packadd conflict3'
+  execute 'packadd vim-mergetool'
   execute 'packadd vcs-jump'
   execute 'packadd auto-git-diff'
   execute 'packadd vim-nix'
@@ -257,8 +203,10 @@ function! functions#packaddhandler(timer)
   execute 'packadd targets.vim'
   execute 'packadd wildfire.vim'
   execute 'packadd vim-edgemotion'
+  execute 'packadd vim-cool'
   execute 'packadd vim-parenmatch'
   execute 'packadd vim-submode'
+  execute 'packadd vim-multiple-cursors'
   execute 'packadd vim-twiggy'
   execute 'packadd cmdline-completion'
   execute 'packadd ferret'

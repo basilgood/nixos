@@ -12,7 +12,6 @@ self: super:
       zip
       ctags
       unrar
-      fzf
       gnumake
       ntfs3g
       usbutils
