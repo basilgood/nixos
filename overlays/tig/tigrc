@@ -25,13 +25,12 @@ bind generic g none
 bind generic gg view-grep
 
 # branch
-bind refs gn  !@git branch "%(prompt Enter branch name: )" %(branch)
-bind main gn  !@git branch "%(prompt Enter branch name: )" %(commit)
+bind refs gn  !@git checkout -b "%(prompt Enter branch name: )" %(branch)
+bind main gn  !@git checkout -b "%(prompt Enter branch name: )" %(commit)
 bind main gco ?git checkout %(commit)
 bind main gcb ?git checkout %(branch)
-bind refs gd  ?git branch -d %(branch)
+bind refs gd  ?git branch -D %(branch)
 bind refs gD  !?git push %(remote) --delete %(branch)
-bind main gD  !?git push %(remote) --delete %(branch)
 
 #Fetch
 bind generic gf ?git fetch --all --prune
@@ -53,19 +52,20 @@ bind main grc ?git rebase --continue
 bind main grk ?git rebase --skip
 
 # push
-bind generic gps ?git push
+bind main    gps ?git push
 bind status  gps ?git push
 bind main    gpf !?git push -f
 bind main    gps !?git push
 bind status  gpf !?git push -f
+bind generic gpr ?git push -u %(remote) %(repo:head)
+bind status  gpr ?git push -u %(remote) %(repo:head)
 
 # pull without merge
-bind main gpu ?git pull --ff-only
-bind main gpr ?git pull --rebase --autostash
+bind main gad ?git pull --ff-only
+bind main gas ?git pull --rebase --autostash
 
 # commit
-bind main   gC  ?git cherry-pick %(commit)
-bind main   gCn ?git cherry-pick -n %(commit)
+bind main   gC ?git cherry-pick -n %(commit)
 bind status A ?git commit --amend
 bind status E ?git commit --amend --no-edit
 
