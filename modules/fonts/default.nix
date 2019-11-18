@@ -16,7 +16,7 @@
     fontconfig = {
       penultimate.enable = false;
       defaultFonts = {
-        monospace = [ "MesloLGS Nerd Font" ];
+        monospace = [ "DejaVuSansMono Nerd Font" ];
         sansSerif = [ "Ubuntu" "DejaVu" ];
       };
     };
