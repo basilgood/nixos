@@ -34,6 +34,7 @@
   programs.git.difftool = "vim";
   programs.git.mergetool = "vim";
   programs.git.interface = pkgs.gitAndTools.tig;
+  programs.git.extraPackages = with pkgs; [gitAndTools.git-imerge];
 
   networking.hostName = "plumfive";
 
