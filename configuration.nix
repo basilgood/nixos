@@ -10,6 +10,8 @@
   users.defaultUser = {
     name = "vasy";
     packages = with pkgs; [
+      kak
+      kitty
       nodejs-10_x
       spotify
       plumelo
@@ -45,9 +47,7 @@
       output * bg ${./modules/programs/sway/wall1.jpg} fill
     '';
 
-    menu = "${pkgs.j4-dmenu-desktop}/bin/j4-dmenu-desktop";
-
-    terminal = "${pkgs.st}/bin/st";
+    terminal = "${pkgs.kitty}/bin/kitty";
 
   };
 
