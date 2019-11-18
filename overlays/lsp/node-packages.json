@@ -1,0 +1,6 @@
+[ "vim-language-server"
+  ,"typescript"
+  ,"vscode-html-languageserver-bin"
+  ,"vscode-css-languageserver-bin"
+  ,"typescript-language-server"
+]
