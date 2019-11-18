@@ -15,7 +15,8 @@ set blame-options              = -C -C -C
 set show-notes                 = yes
 set show-changes               = yes
 set status-show-untracked-dirs = yes
-set refresh-mode = auto
+set refresh-mode = periodic
+set refresh-interval = 5
 set line-graphics              = utf-8
 
 # unbind g
