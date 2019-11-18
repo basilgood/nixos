@@ -69,13 +69,18 @@ in {
         type = types.package;
         default = pkgs.gitAndTools.tig;
       };
+
+      extraPackages = mkOption {
+        type = types.listOf types.package;
+        default = [ ];
+      };
     };
   };
 
   config = mkIf cfg.enable (mkMerge [
     {
       environment = {
-        systemPackages = with pkgs; [ git cfg.interface ];
+        systemPackages = with pkgs; [ git cfg.interface ] ++ cfg.extraPackages;
         etc."gitconfig".text = ''
           [user]
             name = ${cfg.name}
