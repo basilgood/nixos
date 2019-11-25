@@ -1,9 +1,21 @@
-{ config, lib, pkgs, ... }: {
-  imports = [ ./local.nix ./hardware-configuration.nix ./modules/base.nix ];
+{ config, lib, pkgs, ... }:
+
+{
+  imports = [
+    ./local.nix
+    ./hardware-configuration.nix
+    ./modules/base.nix
+    ./modules/hardware/ssd.nix
+    ./modules/hardware/zram.nix
+    ./modules/fonts
+  ];
+
   boot.loader = {
     systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;
   };
+
+  networking.hostName = "plumfive";
 
   powerManagement.cpuFreqGovernor = "ondemand";
 
@@ -13,6 +25,8 @@
       kak
       kitty
       skim
+      aspell
+      aspellDicts.en
       nodejs-10_x
       spotify
       plumelo
@@ -21,6 +35,10 @@
       editorconfig-core-c
       nixfmt
       neovim2
+      vifm
+      mc
+      feh
+      mupdf
     ];
   };
 
@@ -37,21 +55,19 @@
   programs.git.interface = pkgs.gitAndTools.tig;
   programs.git.extraPackages = with pkgs; [gitAndTools.git-imerge];
 
-  networking.hostName = "plumfive";
-
   programs.sway = {
 
     enable = true;
 
-    extraPackages = [ pkgs.numix-gtk-theme ];
-
     extraConfig = ''
-      output * bg ${./modules/programs/sway/wall1.jpg} fill
+      output * bg ${./wall.jpg} fill
     '';
 
     terminal = "${pkgs.kitty}/bin/kitty";
 
   };
+
+  programs.tmux.enable = true;
 
   virtualisation = {
     lxc = {
@@ -63,9 +79,14 @@
     # virtualbox.host.enable = true;
   };
 
-  environment.variables = let vim = "${pkgs.vim}/bin/vim";
+  environment.variables = let neovim = "${pkgs.neovim2}/bin/nvm";
   in {
-    EDITOR = vim;
-    VISUAL = vim;
+    EDITOR = neovim;
+    VISUAL = neovim;
+  };
+
+  services = {
+    redshift.enable = true;
+    syncthing.enable = true;
   };
 }
