@@ -12,6 +12,7 @@
     packages = with pkgs; [
       kak
       kitty
+      skim
       nodejs-10_x
       spotify
       plumelo
