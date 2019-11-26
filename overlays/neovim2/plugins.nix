@@ -23,16 +23,6 @@ with super;
     };
   };
 
-  gv = pkgs.vimUtils.buildVimPlugin {
-    name = "gv.vim";
-    src = fetchFromGitHub {
-      owner = "junegunn";
-      repo = "gv.vim";
-      rev = "7a84f6342cc79444e3fa873bf1d08fb6c53b097e";
-      sha256 = "0q5xz8iw3jg42kbaspmgd8mlcgl3xglcqh3fyd2jmmwhnfzp3f7r";
-    };
-  };
-
   skim-vim = pkgs.vimUtils.buildVimPlugin {
     name = "skim-vim";
     src = fetchFromGitHub {
@@ -58,8 +48,8 @@ with super;
     src = fetchFromGitHub {
       owner = "pangloss";
       repo = "vim-javascript";
-      rev = "b6c8c8419240bdd29b5eb51a47d488fd390deed5";
-      sha256 = "0p56av0zmig4rpsq4w4armnccyd713xdm5lwrck3cip55c39382f";
+      rev = "2e4a8c485cdf601bb2f2761ea68c09750a0b82e0";
+      sha256 = "1zvqpk8qvkhglfdi6ma7ads54w0i8v8vy4k3gcrrjydmwwa2v34l";
     };
   };
 
@@ -96,6 +86,26 @@ with super;
     };
   };
 
+  jsonc = pkgs.vimUtils.buildVimPlugin {
+    name = "jsonc.vim";
+    src = fetchFromGitHub {
+      owner = "neoclide";
+      repo = "jsonc.vim";
+      rev = "80da2a52db41b4c1ecf6f511422d3771e05622fa";
+      sha256 = "1yix6dq1fh5nhwh5c1gr6z9d05ir5a2d0advdsli7n1y0cmwa8hr";
+    };
+  };
+
+  multiple-cursors = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-multiple-cursors";
+    src = fetchFromGitHub {
+      owner = "terryma";
+      repo = "vim-multiple-cursors";
+      rev = "6ab4dc7dd012e23adee74ef4596ad3e9659a20c7";
+      sha256 = "149cg1fwsrd1swvd0ivn1p8j8gpj3gk08mx6dim4fkshknwxs5l0";
+    };
+  };
+
   targets = pkgs.vimUtils.buildVimPlugin {
     name = "targets.vim";
     src = fetchFromGitHub {
@@ -126,6 +136,16 @@ with super;
     };
   };
 
+  conflict-marker = pkgs.vimUtils.buildVimPlugin {
+    name = "conflict-marker.vim";
+    src = fetchFromGitHub {
+      owner = "da-x";
+      repo = "conflict-marker.vim";
+      rev = "9b7c67715d13a18ba0abd2d81b393dc8d458a3fb";
+      sha256 = "03sfhb182bwz0gy3ksn4i6850cncc9l3b0cmfpfl6a642fl7xi3v";
+    };
+  };
+
   vim-edgemotion = pkgs.vimUtils.buildVimPlugin {
     name = "vim-edgemotion";
     src = fetchFromGitHub {
@@ -143,6 +163,16 @@ with super;
       repo = "vim-cool";
       rev = "06918c36b3396af0bec1e87e748a5dba55be87b9";
       sha256 = "099sbjdk944bnivqgqgbjplczfm3k84583ryrmpqf3lgrq6pl8wr";
+    };
+  };
+
+  renamer = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-renamer";
+    src = fetchFromGitHub {
+      owner = "qpkorr";
+      repo = "vim-renamer";
+      rev = "9c6346eb4556cf2d8ca55de6969247ab14fe2383";
+      sha256 = "0gwyn9ff3f9pn5mkk31sxrs230p7fy66399p2yqy43xfqv36mzwl";
     };
   };
 
@@ -166,26 +196,6 @@ with super;
     };
   };
 
-  vim-submode = pkgs.vimUtils.buildVimPlugin {
-    name = "vim-submode";
-    src = fetchFromGitHub {
-      owner = "kana";
-      repo = "vim-submode";
-      rev = "d29de4f55c40a7a03af1d8134453a703d6affbd2";
-      sha256 = "1qf0ryyjbv3yw916dnvqlzqvpskg2sbkwn46a2zph71p16sg6cp7";
-    };
-  };
-
-  multiple = pkgs.vimUtils.buildVimPlugin {
-    name = "vim-multiple-cursors";
-    src = fetchFromGitHub {
-      owner = "terryma";
-      repo = "vim-multiple-cursors";
-      rev = "6ab4dc7dd012e23adee74ef4596ad3e9659a20c7";
-      sha256 = "149cg1fwsrd1swvd0ivn1p8j8gpj3gk08mx6dim4fkshknwxs5l0";
-    };
-  };
-
   cmdline = pkgs.vimUtils.buildVimPlugin {
     name = "cmdline-completion";
     src = fetchFromGitHub {
@@ -196,16 +206,6 @@ with super;
     };
   };
 
-  jsonc = pkgs.vimUtils.buildVimPlugin {
-    name = "jsonc.vim";
-    src = fetchFromGitHub {
-      owner = "neoclide";
-      repo = "jsonc.vim";
-      rev = "80da2a52db41b4c1ecf6f511422d3771e05622fa";
-      sha256 = "1yix6dq1fh5nhwh5c1gr6z9d05ir5a2d0advdsli7n1y0cmwa8hr";
-    };
-  };
-
   nordish = pkgs.vimUtils.buildVimPlugin {
     pname = "nordish";
     version = "0.0.1";
@@ -213,7 +213,6 @@ with super;
     unpackCmd = ''
       mkdir -p out/colors;
       ln -s $curSrc out/colors/nordish.vim
-      ls -al $curSrc
     '';
     buildPhase = ":";
     configurePhase = ":";
@@ -226,9 +225,25 @@ with super;
     unpackCmd = ''
       mkdir -p out/autoload;
       ln -s $curSrc out/autoload/functions.vim
-      ls -al $curSrc
     '';
     buildPhase = ":";
     configurePhase = ":";
   };
+
+  # allfunc = opt_plugins: pkgs.vimUtils.buildVimPlugin {
+  #   pname = "allfunc";
+  #   version = "0.0.1";
+  #   src = pkgs.writeText "functions.vim" ''
+  #     ${pkgs.readFile ./allfunc/functions.vim}
+  #     func packaddhandler
+  #     ${pkgs.lib.map opt_plugins ({name}: "execute 'packadd ${name}'") }
+  #     endfunc
+  #   '';
+  #   unpackCmd = ''
+  #     mkdir -p out/autoload;
+  #     ln -s $curSrc out/autoload/functions.vim
+  #   '';
+  #   buildPhase = ":";
+  #   configurePhase = ":";
+  # };
 }
