@@ -23,7 +23,7 @@
     name = "vasy";
     packages = with pkgs; [
       kak
-      kitty
+      alacritty
       skim
       aspell
       aspellDicts.en
@@ -62,8 +62,6 @@
     extraConfig = ''
       output * bg ${./wall.jpg} fill
     '';
-
-    terminal = "${pkgs.kitty}/bin/kitty";
 
   };
 
