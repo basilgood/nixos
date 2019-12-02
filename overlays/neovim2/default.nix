@@ -4,6 +4,31 @@ with super;
 let
   customPlugins = import ./plugins.nix { inherit self super; };
   allPlugins = vimPlugins // customPlugins;
+
+  loadPlugin = p: ''
+    set rtp^=${p.rtp}
+    set rtp+=${p.rtp}/after
+  '';
+
+  ftplugins = ''
+    filetype off | syn off
+    ${super.lib.concatStrings (map loadPlugin startPackages)}
+    filetype indent plugin on | syn on
+  '';
+
+  startPackages = with super.vimPlugins; [
+    vim-javascript
+    vim-coffee-script
+    vim-jinja
+    vim-markdown
+    vim-json
+    vim-nix
+    customPlugins.yats
+    customPlugins.twig
+    customPlugins.jsx
+    customPlugins.jsonc
+  ];
+
   init = builtins.readFile ./config/init.vim;
   coc = builtins.readFile ./config/coc.vim;
   plugins = builtins.readFile ./config/plugins.vim;
@@ -11,30 +36,18 @@ let
   mappings = builtins.readFile ./config/mappings.vim;
   commands = builtins.readFile ./config/commands.vim;
   autocmds = builtins.readFile ./config/autocmds.vim;
+
   customNeovim = neovim.override {
     withNodeJs = true;
 
     configure = {
       packages.myVimPackage = with allPlugins; {
 
-        start = [
-          allfunc
-          vim-javascript
-          yats
-          vim-coffee-script
-          vim-jinja
-          vim-markdown
-          vim-json
-          twig
-          jsx
-          jsonc
-          vim-nix
-          neomake
-        ];
+        start = startPackages ++ [ allfunc neomake ];
 
         opt = [
           vinegar
-          renamer
+          ags
           coc-nvim
           actionmenu
           surround
@@ -47,7 +60,6 @@ let
           vim-easy-align
           multiple-cursors
           auto-git-diff
-          ferret
           skim
           skim-vim
           vim-fugitive
@@ -68,6 +80,7 @@ let
       };
 
       customRC = ''
+        ${ftplugins}
         ${init}
         ${coc}
         ${plugins}

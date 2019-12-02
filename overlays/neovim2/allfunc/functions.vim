@@ -38,7 +38,7 @@ function! functions#packaddhandler(timer)
   execute 'packadd vim-fugitive'
   execute 'packadd vim-conflicted'
   execute 'packadd vim-vinegar'
-  execute 'packadd vim-renamer'
+  execute 'packadd vim-ags'
   execute 'packadd vim-dispatch'
   execute 'packadd skim'
   execute 'packadd skim-vim'

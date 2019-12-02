@@ -166,13 +166,13 @@ with super;
     };
   };
 
-  renamer = pkgs.vimUtils.buildVimPlugin {
-    name = "vim-renamer";
+  ags = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-ags";
     src = fetchFromGitHub {
-      owner = "qpkorr";
-      repo = "vim-renamer";
-      rev = "9c6346eb4556cf2d8ca55de6969247ab14fe2383";
-      sha256 = "0gwyn9ff3f9pn5mkk31sxrs230p7fy66399p2yqy43xfqv36mzwl";
+      owner = "gabesoft";
+      repo = "vim-ags";
+      rev = "22578799d437f674760d02cd25cfdb9bea0d93fb";
+      sha256 = "0v9dhnccr691hva6567r60fnkf2lv8ivz39h4h1qriz8jwg62xc9";
     };
   };
 
