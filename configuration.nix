@@ -10,6 +10,24 @@
     ./modules/fonts
   ];
 
+  services.matrix-synapse = {
+    enable = true;
+    database_type = "sqlite3";
+    listeners = [{
+      port = 8008;
+      bind_address = "::1";
+      resources = [{
+        compress = false;
+        names = [ "client" "federation" ];
+      }];
+      type = "http";
+      tls = false;
+      x_forwarded = true;
+    }];
+    enable_registration = true;
+    web_client = true;
+  };
+
   boot.loader = {
     systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;
