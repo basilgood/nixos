@@ -28,6 +28,21 @@
     web_client = true;
   };
 
+  services.nginx = {
+    enable = true;
+    recommendedTlsSettings = true;
+    recommendedOptimisation = true;
+    recommendedGzipSettings = true;
+    recommendedProxySettings = true;
+    virtualHosts = {
+      "riot.local" = {
+        enableACME = true;
+        forceSSL = true;
+        root = pkgs.riot-web;
+      };
+    };
+  };
+
   boot.loader = {
     systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;
