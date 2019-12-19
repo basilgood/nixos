@@ -1,20 +1,37 @@
 { config, pkgs, ... }:
+
 {
   imports = [
     ../fonts
     ../base
     ../base-desktop
+    ./scripts
   ];
 
   users.defaultUser = {
-    name = "iulian";
+    name = "vasy";
     packages = with pkgs; [
-      libnotify
-      chromium
-      firefox
-      keepassxc
+      unzip
+      zip
+      unrar
+      htop
+      bat
+      usbutils
+      psmisc
+      tig
+      fzf
       kak
-      nomachine-client
+      aspell
+      aspellDicts.en
+      libnotify
+      spotify
+      feh
+      zathura
+      firefox
+      chromium
+      keepassxc
+      libnotify
+      _vim
       parsec-client
 
       (weechat.override {
@@ -42,30 +59,59 @@
       enable = true;
       menu = "${pkgs.bemenu}/bin/bemenu-run -w -i --prefix '⇒' --prompt 'Run: ' --hb '#404654' --ff '#c698e3' --tf '#c698e3' --hf '#fcfcfc'";
     };
+
     tmux = {
       enable = true;
       shortcut = "Space";
     };
-    bash.interactiveShellInit = let hstr = "HSTR_CONFIG=hicolor ${pkgs.hstr}/bin/hstr"; in
-      ''
-        # hstr
-        bind '"\C-r": "\C-a ${hstr} -- \C-j"';
-        bind '"\C-xk": "\C-a ${hstr} -k \C-j"'
-      '';
-    git = rec {
+
+    bash = {
+      shellAliases = {
+        glog = "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' --all";
+      };
+    };
+
+    git = {
       enable = true;
-      editor = "${pkgs.kak}/bin/kak";
-      difftool = "kdiff3";
-      mergetool = "kdiff3";
+      user = ''
+        name = vasile luta
+        email = elsile69@yahoo.com
+      '';
+      core = ''
+        editor = ${pkgs.neovim_configured}/bin/nvim
+        pager = ${pkgs.less}/bin/less -S
+      '';
+      diff = ''
+        tool = vimdiff
+      '';
+      merge = ''
+        tool = vimdiff
+        conflictStyle = diff3
+      '';
+      extraConfig = ''
+        [commit]
+          template = ~/.git-commit-template
+      '';
+      alias = ''
+        lg = log --oneline --graph --all
+      '';
+      extraPackages = with pkgs; [
+        gitAndTools.tig
+      ];
     };
     gnupg.agent = {
       enable = true;
     };
   };
 
-  environment.variables = rec {
-    VISUAL = "${pkgs.kak}/bin/kak";
-    EDITOR = VISUAL;
+  environment.variables = {
+    VISUAL = "${pkgs.neovim_configured}/bin/nvim";
+    EDITOR = "${pkgs.neovim_configured}/bin/nvim";
+    PAGER = "${pkgs.gitAndTools.diff-so-fancy}/bin/diff-so-fancy | ${pkgs.less}/bin/less --tabs=1,5 -RS";
+    BAT_PAGER = "${pkgs.less}/bin/less -irRSx4";
+    BAT_THEME = "TwoDark";
+    MANPAGER = "${pkgs.bash}/bin/sh -c 'col -bx | ${pkgs.bat}/bin/bat -l man -p'";
+    PATH = [ "~/.local/bin" ];
   };
 
   services = {

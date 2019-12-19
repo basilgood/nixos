@@ -1,0 +1,75 @@
+{ config, options, lib, pkgs, ... }:
+with lib;
+let
+  cfg = config.programs.git;
+in
+{
+  options = {
+    programs.git = {
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+      };
+
+      lfsEnable = mkOption {
+        type = types.bool;
+        default = true;
+      };
+
+      userName = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+      };
+
+      userEmail = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+      };
+
+      aliases = mkOption {
+        type = types.attrsOf types.str;
+        default = {};
+        example = { lg = "log --oneline --graph --all"; };
+      };
+
+      extraConfig = mkOption {
+        type = types.lines;
+        default = {};
+      };
+
+      extraPackages = mkOption {
+        type = types.listOf types.package;
+        default = [];
+      };
+    };
+  };
+
+  config = mkIf cfg.enable (
+    mkMerge [
+      {
+        environment = {
+          systemPackages = with pkgs; [ git ] ++ cfg.extraPackages;
+          etc."gitconfig".text = ''
+            [user]
+              ${cfg.userName}
+            [email]
+              ${cfg.userEmail}
+            ${cfg.extraConfig}
+          '';
+        };
+      }
+      (
+        mkIf cfg.lfsEnable {
+          environment.systemPackages = [ pkgs.git-lfs ];
+          environment.etc."gitconfig".text = mkAfter ''
+            [filter "lfs"]
+              clean = git-lfs clean -- %f
+              smudge = git-lfs smudge -- %f
+              process = git-lfs filter-process
+              required = true
+          '';
+        }
+      )
+    ]
+  );
+}
