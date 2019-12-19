@@ -2,22 +2,8 @@
 with lib;
 let
   cfg = config.programs.git;
-
-  difftools = {
-    nvim = ''${pkgs.neovim}/bin/nvim -d "$LOCAL" "$REMOTE"'';
-    vim = ''${pkgs.vim}/bin/vim -d "$LOCAL" "$REMOTE"'';
-    kdiff3 = ''${pkgs.kdiff3}/bin/kdiff3 "$LOCAL" "$REMOTE"'';
-  };
-
-  mergetools = {
-    nvim = ''
-      ${pkgs.neovim}/bin/nvim -f -c "MergetoolStart" "$MERGED" "$BASE" "$LOCAL" "$REMOTE"'';
-    vim = ''
-      ${pkgs.vim}/bin/vim -f -c "MergetoolStart" "$MERGED" "$BASE" "$LOCAL" "$REMOTE"'';
-    kdiff3 =
-      ''${pkgs.kdiff3}/bin/kdiff3 "$BASE" "$LOCAL" "$REMOTE" -o "$MERGED"'';
-  };
-in {
+in
+{
   options = {
     programs.git = {
       enable = mkOption {
@@ -30,24 +16,97 @@ in {
         default = true;
       };
 
-      name = mkOption {
-        type = types.str;
+      user = mkOption {
+        type = types.lines;
         default = "";
       };
 
-      email = mkOption {
-        type = types.str;
+      core = mkOption {
+        type = types.lines;
+        default = ''
+        '';
+      };
+
+      status = mkOption {
+        type = types.lines;
+        default = ''
+          showuntrackedfiles = all
+        '';
+      };
+
+      rerere = mkOption {
+        type = types.lines;
+        default = ''
+          enabled = 1
+          autoupdate = 1
+        '';
+      };
+
+      color = mkOption {
+        type = types.lines;
+        default = ''
+          ui = auto
+        '';
+      };
+
+      colorBranch = mkOption {
+        type = types.lines;
+        default = ''
+          current = yellow reverse
+          local = yellow
+          remote = green
+        '';
+      };
+
+      colorDiff = mkOption {
+        type = types.lines;
+        default = ''
+          meta = blue
+          frag = black
+          old = red
+          new = green
+        '';
+      };
+
+      colorStatus = mkOption {
+        type = types.lines;
+        default = ''
+          added = green
+          changed = yellow
+          untracked = cyan
+        '';
+      };
+
+      diff = mkOption {
+        type = types.lines;
         default = "";
       };
 
-      editor = mkOption {
-        type = types.str;
-        default = "${pkgs.neovim}/bin/nvim";
+      diffTool = mkOption {
+        type = types.lines;
+        default = ''
+          prompt = false
+          trustExitCode = true
+        '';
       };
 
-      pager = mkOption {
-        type = types.str;
-        default = "${pkgs.less}/bin/less";
+      merge = mkOption {
+        type = types.lines;
+        default = "";
+      };
+
+      mergeTool = mkOption {
+        type = types.lines;
+        default = ''
+          conflictstyle = diff3
+          prompt = false
+          keepBackup = false
+        '';
+      };
+
+      alias = mkOption {
+        type = types.lines;
+        default = "";
       };
 
       extraConfig = mkOption {
@@ -55,86 +114,62 @@ in {
         default = "";
       };
 
-      difftool = mkOption {
-        type = types.enum [ "nvim" "vim" "kdiff3" ];
-        default = "nvim";
-      };
-
-      mergetool = mkOption {
-        type = types.enum [ "nvim" "vim" "kdiff3" ];
-        default = "nvim";
-      };
-
-      interface = mkOption {
-        type = types.package;
-        default = pkgs.gitAndTools.tig;
+      extraPackages = mkOption {
+        type = types.listOf types.package;
+        default = [];
       };
     };
   };
 
-  config = mkIf cfg.enable (mkMerge [
-    {
-      environment = {
-        systemPackages = with pkgs; [ git cfg.interface ];
-        etc."gitconfig".text = ''
-          [user]
-            name = ${cfg.name}
-            email = ${cfg.email}
-          [core]
-            editor = ${cfg.editor}
-            pager = ${cfg.pager}
-            excludesfile = ~/.gitignore
-          [status]
-            showuntrackedfiles = all
-          [rerere]
-            enabled = 1
-            autoupdate = 1
-          [color]
-            diff = auto
-            status = auto
-            branch = auto
-            ui = auto
-          [color "diff"]
-            meta = blue
-            frag = black
-            old = red
-            new = green
-          [color "status"]
-            added = green
-            changed = yellow
-            untracked = cyan
-          [color "branch"]
-            current = yellow reverse
-            local = yellow
-            remote = green
-          [alias]
-            lg = log --oneline --graph --all
-          ${cfg.extraConfig}
-          [diff]
-            prompt = false
-            tool = diff_tool
-          [difftool "diff_tool"]
-            cmd = ${difftools.${cfg.difftool}}
-          [merge]
-            tool = diff_tool
-            conflictstyle = diff3
-          [mergetool "diff_tool"]
-            prompt = false
-            keepBackup = false
-            cmd = ${mergetools.${cfg.mergetool}}
-        '';
-      };
-    }
+  config = mkIf cfg.enable (
+    mkMerge [
+      {
+        environment = {
+          systemPackages = with pkgs; [ git ] ++ cfg.extraPackages;
+          etc."gitconfig".text = ''
+            [user]
+              ${cfg.user}
+            [core]
+              ${cfg.core}
+            [status]
+              ${cfg.status}
+            [rerere]
+              ${cfg.rerere}
+            [color]
+              ${cfg.color}
+            [color "branch"]
+              ${cfg.colorBranch}
+            [color "diff"]
+              ${cfg.colorBranch}
+            [color "status"]
+              ${cfg.colorStatus}
+            [diff]
+              ${cfg.diff}
+            [difftool]
+              ${cfg.diffTool}
+            [merge]
+              ${cfg.merge}
+            [mergetool]
+              ${cfg.mergeTool}
+            [alias]
+              ${cfg.alias}
+            ${cfg.extraConfig}
+          '';
+        };
+      }
 
-    (mkIf cfg.lfsEnable {
-      environment.systemPackages = [ pkgs.git-lfs ];
-      environment.etc."gitconfig".text = mkAfter ''
-        [filter "lfs"]
-          clean = git-lfs clean -- %f
-          smudge = git-lfs smudge -- %f
-          process = git-lfs filter-process
-          required = true
-      '';
-    })
-  ]);
+      (
+        mkIf cfg.lfsEnable {
+          environment.systemPackages = [ pkgs.git-lfs ];
+          environment.etc."gitconfig".text = mkAfter ''
+            [filter "lfs"]
+              clean = git-lfs clean -- %f
+              smudge = git-lfs smudge -- %f
+              process = git-lfs filter-process
+              required = true
+          '';
+        }
+      )
+    ]
+  );
 }
