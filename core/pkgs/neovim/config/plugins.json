@@ -1,0 +1,38 @@
+{
+  "diffconflicts": {
+    "name": "diffconflicts",
+    "src": {
+      "owner": "whiteinge",
+      "repo": "diffconflicts",
+      "rev": "205e0e09ee0ae859590f846ea921c8d7f1d4e91d",
+      "hash": "sha256-SnhogtLBv/KIJc3aKBV0B2BMV0m10piRO6p0q1/NZT0="
+    }
+  },
+  "vim-fixjson": {
+    "name": "vim-fixjson",
+    "src": {
+      "owner": "rhysd",
+      "repo": "vim-fixjson",
+      "rev": "95452089fb38152a9081d0229ef3071525ba340d",
+      "hash": "sha256-fBwprwJTzLeIg/cBaSLpcX3OurgtvlSYhsMpK96BhLQ="
+    }
+  },
+  "vim-enmasse": {
+    "name": "vim-enmasse",
+    "src": {
+      "owner": "Olical",
+      "repo": "vim-enmasse",
+      "rev": "c2286f1d7bd735287a661cd223cd94e2a1f74deb",
+      "hash": "sha256-eOMpCj4o9EK5mhbXEQ5Vz32/0UKbyRxNyDHhtP8QggE="
+    }
+  },
+  "min": {
+    "name": "min",
+    "src": {
+      "owner": "basilgood",
+      "repo": "min.vim",
+      "rev": "6b4ecfaaa205f709c8b12db15882f4e6c7612db4",
+      "hash": "sha256-oKRBCgNavBNwPOG10NvbJr5eKik3ujCKlv1Zi23Bfjs="
+    }
+  }
+}

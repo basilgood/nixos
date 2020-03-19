@@ -1,100 +1,22 @@
 { lib, callPackage, vimPlugins }:
 let
-  extraPlugins = callPackage ../plugins.nix {};
+  extraPlugins = callPackage ./plugins.nix { };
   neovimConfig = {
     customRC = ''
       ${builtins.readFile ./init.vim};
-      ${builtins.readFile ./options.vim};
-      ${builtins.readFile ./mappings.vim};
-      ${builtins.readFile ./commands.vim};
-      ${builtins.readFile ./autocmds.vim};
-      ${builtins.readFile ./colorscheme.vim};
+      silent! colorscheme min
       set secure
     '';
     plugins = with vimPlugins // extraPlugins; [
       {
-        start = coc-nvim;
-        config = ''
-          let g:coc_user_config = {
-            \ 'coc.preferences.colorSupport': v:true,
-            \ 'coc.preferences.extensionUpdateCheck': 'never',
-            \ 'suggest.minTriggerInputLength': 2,
-            \ 'suggest.timeout': 500,
-            \ 'suggest.removeDuplicateItems': v:true,
-            \ 'suggest.floatEnable': v:true,
-            \ 'suggest.triggerCompletionWait': 100,
-            \ 'diagnostic': {
-            \     'displayByAle': v:true,
-            \     'virtualText': v:true
-            \ },
-            \ 'javascript.suggestionActions.enabled': v:false,
-            \ 'typescript.suggestionActions.enabled': v:true,
-            \ 'languageserver': {
-            \     'viml': {
-            \         'command': 'vim-language-server',
-            \         'args': [
-            \             "--stdio"
-            \         ],
-            \         'filetypes': [
-            \             "vim"
-            \         ],
-            \         'initializationOptions': {
-            \             'vimlcodeCompletionEnabled': v:true,
-            \             'lintTool': "vint"
-            \         }
-            \     },
-            \     'javascript': {
-            \         'command': "typescript-language-server",
-            \         'args': [
-            \             '--stdio'
-            \         ],
-            \         'filetypes': [
-            \             'javascript',
-            \             'typescript'
-            \         ]
-            \     },
-            \     'html': {
-            \         'command': 'html-languageserver',
-            \         'args': [
-            \             '--stdio'
-            \         ],
-            \         'filetypes': [
-            \             'html'
-            \         ]
-            \     },
-            \     'css': {
-            \         'command': 'css-languageserver',
-            \         'args': [
-            \             '--stdio'
-            \         ],
-            \         'filetypes': [
-            \             'css',
-            \             'scss'
-            \         ]
-            \     }
-            \ }
-          \ }
-
-          nmap <silent> gld <Plug>(coc-definition)
-          nmap <silent> gli <Plug>(coc-implementation)
-          nmap <silent> glr <Plug>(coc-references)
-          nmap <silent> glc <Plug>(coc-codeaction)
-          nmap <silent> [g <Plug>(coc-diagnostic-prev)
-          nmap <silent> ]g <Plug>(coc-diagnostic-next)
-          nmap <silent> [c <Plug>(coc-git-prevchunk)
-          nmap <silent> ]c <Plug>(coc-git-nextchunk)
-          nnoremap <silent> K :call CocAction('doHover')<cr>
-          command! -nargs=0 Format :call CocAction('format')
-          command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
-        '';
-      }
-      {
         start = gitgutter;
         config = ''
-          let g:gitgutter_sign_priority = 8
           let g:gitgutter_override_sign_column_highlight = 0
-          let g:gitgutter_sign_added              = '|'
-          let g:gitgutter_sign_modified           = '|'
+          let g:gitgutter_sign_added='┃'
+          let g:gitgutter_sign_modified='┃'
+          let g:gitgutter_sign_removed='◢'
+          let g:gitgutter_sign_removed_first_line='◥'
+          let g:gitgutter_sign_modified_removed='◢'
           nmap ghs <Plug>(GitGutterStageHunk)
           nmap ghu <Plug>(GitGutterUndoHunk)
           nmap ghp <Plug>(GitGutterPreviewHunk)
@@ -105,7 +27,48 @@ let
         config = "";
       }
       {
-        start = quickfix-reflector-vim;
+        start = deoplete-nvim;
+        config = ''
+          autocmd FileType css,sass,scss setlocal omnifunc=csscomplete#CompleteCSS
+          let g:deoplete#enable_at_startup = 1
+        '';
+      }
+      {
+        opt = deoplete-lsp;
+        config = ''
+          autocmd vimRc BufReadPost *
+                \ execute 'packadd deoplete-lsp'
+        '';
+      }
+      {
+        opt = nvim-lsp;
+        config = ''
+          autocmd vimRc BufReadPost *
+                \ execute 'packadd nvim-lsp'
+          lua << EOF
+          if not package.loaded.nvim_lsp then
+            vim.cmd 'packadd nvim-lsp'
+            vim._update_package_paths()
+          end
+          local nvim_lsp = require'nvim_lsp'
+          nvim_lsp.tsserver.setup {
+            cmd = {'typescript-language-server', '--stdio'},
+            filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" }
+          }
+          nvim_lsp.vimls.setup {
+            cmd = {'vim-language-server', '--stdio'},
+            filetypes = { 'vim' }
+          }
+          nvim_lsp.rnix.setup {
+            cmd = {'rnix-lsp'},
+            filetypes = { 'nix' },
+            init_options = {}
+          }
+          EOF
+        '';
+      }
+      {
+        start = vim-enmasse;
         config = "";
       }
       {
@@ -119,13 +82,17 @@ let
                 \ 'ctrl-v': 'vsplit',
                 \ 'ctrl-w': 'bdelete'}
           nnoremap <c-p> :Files<cr>
-          nnoremap <c-h> :Files %:h<cr>
           nnoremap <bs> :Buffers<cr>
+          function! RipgrepFzf(query, fullscreen)
+            let command_fmt = 'rg --column --line-number --no-heading --color=always --hidden --smart-case -g "!.git" %s || true'
+            let initial_command = printf(command_fmt, shellescape(a:query))
+            let reload_command = printf(command_fmt, '{q}')
+            let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+            call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+          endfunction
+
+          command! -nargs=* -bang Rg call RipgrepFzf(<q-args>, <bang>0)
         '';
-      }
-      {
-        start = vim-pairify;
-        config = "";
       }
       {
         opt = fzfWrapper;
@@ -139,14 +106,14 @@ let
         config = ''
           autocmd vimRc BufEnter * execute 'packadd vim-vinegar'
           let g:netrw_bufsettings = 'nomodifiable nomodified relativenumber nowrap readonly nobuflisted'
-          let g:netrw_altfile             = 1
+          let g:netrw_altfile = 1
+          let g:netrw_altv = 1
+          let g:netrw_preview = 1
+          let g:netrw_alto = 0
+          let g:netrw_use_errorwindow = 0
           function! Innetrw() abort
             nmap <buffer> <right> <cr>
-            nmap <buffer> l <cr>
             nmap <buffer> <left> -
-            nmap <buffer> h -
-            nmap <buffer> gq :bn<bar>bd#<cr>
-            nmap <buffer> D .!rm -rf
           endfunction
           autocmd vimRc FileType netrw call Innetrw()
         '';
@@ -154,72 +121,44 @@ let
       {
         opt = ale;
         config = ''
-          autocmd vimRc BufReadPost *
-                \ execute 'packadd ale'
-          let g:ale_set_signs = 1
-          let g:ale_lint_on_text_changed = 'normal'
-          let g:ale_lint_on_insert_leave = 1
-          let g:ale_lint_delay = 0
-          let g:ale_code_actions_enabled = 1
-          let g:ale_sign_info = '_i'
-          let g:ale_sign_error = '_e'
-          let g:ale_sign_warning = '_w'
-          let g:ale_set_balloons = 1
-          let g:ale_javascript_eslint_use_global = 1
-          let g:ale_javascript_eslint_executable = 'eslint_d'
-          let g:ale_javascript_prettier_options = '--single-quote'
-          let g:ale_echo_msg_format = '%linter%: %s %severity%'
-          let g:ale_linters = {
-                \   'jsx': ['eslint'],
-                \   'javascript': ['eslint'],
-                \   'typescript': ['eslint'],
-                \}
-          let g:ale_fixers = {
-                \   'javascript': ['prettier', 'eslint'],
-                \   'html': ['prettier', 'eslint'],
-                \   'yaml': ['prettier'],
-                \   'nix': ['nixpkgs-fmt']
-          \}
+         autocmd vimRc BufReadPost *
+               \ execute 'packadd ale'
+         let g:ale_lint_on_text_changed = 'normal'
+         let g:ale_lint_on_insert_leave = 1
+         let g:ale_lint_delay = 0
+         let g:ale_sign_info = '_i'
+         let g:ale_sign_error = '_e'
+         let g:ale_sign_warning = '_w'
+         let g:ale_echo_msg_format = '%linter%: %s %severity%'
+         let g:ale_linters = {
+               \   'jsx': ['eslint'],
+               \   'javascript': ['eslint'],
+               \   'typescript': ['eslint']
+               \}
 
-          nnoremap [a :ALEPreviousWrap<CR>
-          nnoremap ]a :ALENextWrap<CR>
+         nnoremap [a :ALEPreviousWrap<CR>
+         nnoremap ]a :ALENextWrap<CR>
         '';
       }
       {
-        opt = vimfugitive;
+        opt = vim-fugitive;
         config = ''
-          autocmd vimRc BufReadPre *
+          autocmd vimRc CmdlineEnter *
                 \ execute 'packadd vim-fugitive'
           nnoremap [git]  <Nop>
           nmap <space>g [git]
           nnoremap <silent> [git]s :<C-u>vertical Gstatus<CR>
-          nnoremap <silent> [git]d :<C-u>Gvdiffsplit!<CR>
-
-          function! InFugitive() abort
-            nmap <buffer> zp :<c-u>Dispatch! git push<CR>
-            nmap <buffer> zF :<c-u>Dispatch! git push -f<CR>
-          endfunction
-
-          autocmd vimRc FileType fugitive call InFugitive()
+          nnoremap <silent> [git]d :<C-u>Gvdiffsplit!<CR>gg
+          nnoremap <silent> [git]l :<C-u>vertical Git --paginate log --oneline --graph --decorate --all<CR>
+          cnoreabbrev Gg Gg!
         '';
       }
       {
-        opt = dispatch;
+        opt = editorconfig-vim;
         config = ''
-          autocmd vimRc BufReadPost *
-                \ execute 'packadd vim-dispatch'
-        '';
-      }
-      {
-        opt = sgureditorconfig;
-        config = ''
-          autocmd vimRc BufReadPost *
-                \ execute 'packadd vim-editorconfig'
-          let g:editorconfig_root_chdir = 1
-          let g:editorconfig_verbose    = 1
-          let g:editorconfig_blacklist  = {
-                \ 'filetype': ['git.*', 'fugitive'],
-                \ 'pattern': ['\.un~$']}
+          autocmd vimRc BufReadPre *
+                \ execute 'packadd editorconfig-vim'
+          let g:EditorConfig_exclude_patterns = ['fugitive://.*']
         '';
       }
       {
@@ -248,13 +187,6 @@ let
         '';
       }
       {
-        opt = hlyank;
-        config = ''
-          autocmd vimRc BufReadPost *
-                \ execute 'packadd hlyank.vim'
-        '';
-      }
-      {
         opt = targets-vim;
         config = ''
           autocmd vimRc BufReadPost *
@@ -262,10 +194,27 @@ let
         '';
       }
       {
-        opt = vim-async-grep;
+        opt = traces-vim;
         config = ''
           autocmd vimRc BufReadPost *
-                \ execute 'packadd vim-async-grep'
+                \ execute 'packadd traces-vim'
+        '';
+      }
+      {
+        opt = ack-vim;
+        config = ''
+          autocmd vimRc CmdlineEnter *
+                \ execute 'packadd ack-vim'
+          let g:ackprg = 'rg --vimgrep --no-heading'
+          let g:ackhighlight = 1
+          cnoreabbrev Ack Ack!
+        '';
+      }
+      {
+        opt = vim-visual-multi;
+        config = ''
+          autocmd vimRc BufReadPost *
+                \ execute 'packadd vim-visual-multi'
         '';
       }
       {
@@ -286,22 +235,6 @@ let
         '';
       }
       {
-        opt = vim-mergetool;
-        config = ''
-          autocmd vimRc BufReadPost *
-                \ execute 'packadd vim-mergetool'
-          let g:mergetool_layout = 'bmr'
-          nmap [git]m <plug>(MergetoolToggle)
-        '';
-      }
-      {
-        opt = conflict-marker;
-        config = ''
-          autocmd vimRc BufReadPost *
-                \ execute 'packadd conflict-marker.vim'
-        '';
-      }
-      {
         opt = auto-git-diff;
         config = ''
           autocmd vimRc FileType gitrebase
@@ -309,17 +242,16 @@ let
         '';
       }
       {
-        opt = vim-smoothie;
+        opt = gv-vim;
         config = ''
-          autocmd vimRc BufReadPost *
-                \ execute 'packadd vim-smoothie'
+          command! GV packadd gv-vim | GV
         '';
       }
       {
-        opt = cmdline-completion;
+        opt = diffconflicts;
         config = ''
           autocmd vimRc CmdlineEnter *
-                \ execute 'packadd cmdline-completion'
+                \ execute 'packadd diffconflicts'
         '';
       }
       {
@@ -330,26 +262,12 @@ let
         '';
       }
       {
-        opt = lithtml;
+        opt = vim-html-template-literals;
         config = ''
           autocmd vimRc BufReadPre *.js,*.jsx
                 \ execute 'packadd vim-html-template-literals'
           let g:htl_all_templates = 1
           let g:htl_css_templates = 1
-        '';
-      }
-      {
-        opt = vim-pug;
-        config = ''
-          autocmd vimRc BufReadPre *.pug
-                \ execute 'packadd vim-pug'
-        '';
-      }
-      {
-        opt = vim-pug-complete;
-        config = ''
-          autocmd vimRc BufReadPre *.pug
-                \ execute 'packadd vim-pug-complete'
         '';
       }
       {
@@ -385,14 +303,16 @@ let
         config = ''
           autocmd vimRc BufReadPre *.json
                 \ execute 'packadd vim-fixjson'
+          let g:fixjson_fix_on_save = 0
         '';
       }
       {
-        opt = vim-nix;
-        config = ''
-          autocmd vimRc BufReadPre *.nix
-                \ execute 'packadd vim-nix'
-        '';
+        start = vim-nix;
+        config = "";
+      }
+      {
+        opt = min;
+        config = "";
       }
     ];
   };
@@ -403,8 +323,7 @@ let
       start = map (item: item.start) (builtins.filter (check: check ? "start") cfg.plugins);
       opt = map (item: item.opt) (builtins.filter (check: check ? "opt") cfg.plugins);
     };
-    customRC = cfg.customRC + "\n" + lib.concatMapStringsSep "\n" (george: george.config) cfg.plugins;
+    customRC = cfg.customRC + "\n" + lib.concatMapStringsSep "\n" (plug: plug.config) cfg.plugins;
   };
-
 in
 { configure = fun neovimConfig; }

@@ -8,57 +8,59 @@
 , makeWrapper
 , fetchFromGitHub
 , ag
+, ripgrep
 , fd
 , fzf
 , git
 , nodePackages
 , nixpkgs-fmt
+, shfmt
 , editorconfig-core-c
 , python37Packages
+, python27Packages
+, rnix-lsp
 }:
 let
-  lsp = callPackage ./lsp {};
-  neovimConfig = callPackage ./config {};
-  neovim = wrapNeovim (
-    neovim-unwrapped.overrideAttrs (
-      old: rec {
-        name = "neovim-unwrapped-${version}";
-        version = "nightly";
-        src = fetchFromGitHub {
-          owner = "neovim";
-          repo = "neovim";
-          rev = "a2efc9cf8b0fdf14b01156ba424145e1847f789c";
-          sha256 = "1d7i8087mjzbc9awqp3j0jr0pdn1k04kckml3wbbknws46fb27gx";
-        };
-        nativeBuildInputs = old.nativeBuildInputs ++ [ utf8proc makeWrapper ];
-        postInstall = old.postInstall + ''
-          wrapProgram $out/bin/nvim --prefix PATH : ${lib.makeBinPath
-          [
-            ag
-            fzf
-            git
-            fd
-            lsp.vim-language-server
-            lsp.fixjson
-            nodePackages.eslint
-            nodePackages.eslint_d
-            nodePackages.prettier
-            nodePackages.typescript
-            nodePackages.typescript-language-server
-            nodePackages.vscode-html-languageserver-bin
-            nodePackages.vscode-css-languageserver-bin
-            nixpkgs-fmt
-            vim-vint
-            python37Packages.yamllint
-            editorconfig-core-c
-          ]
+  lsp = callPackage ./lsp { };
+  neovimConfig = callPackage ./config { };
+  neovim = wrapNeovim
+    (
+      neovim-unwrapped.overrideAttrs (
+        old: rec {
+          name = "neovim-unwrapped-${version}";
+          version = "nightly";
+          src = fetchFromGitHub {
+            owner = "neovim";
+            repo = "neovim";
+            rev = "1ca67a73c0ba680eb8328e68bea31f839855dd29";
+            hash = "sha256-wlbtWKYd2PSlwhJgfK4DiJTbSCyASUaZ683aW3tpyJQ=";
+          };
+          nativeBuildInputs = old.nativeBuildInputs ++ [ utf8proc makeWrapper ];
+          postInstall = old.postInstall + ''
+            wrapProgram $out/bin/nvim --prefix PATH : ${lib.makeBinPath [
+              ripgrep
+              fzf
+              git
+              fd
+              lsp.vim-language-server
+              lsp.fixjson
+              lsp.jsonlint
+              nodePackages.eslint
+              nodePackages.prettier
+              nodePackages.typescript
+              nodePackages.typescript-language-server
+              nixpkgs-fmt
+              shfmt
+              vim-vint
+              python37Packages.yamllint
+            ]
+            }
+          '';
         }
-        '';
-      }
-    )
-  ) {
+      )
+    ) {
     withNodeJs = true;
-    vimAlias = true;
+    extraPython3Packages = pythonPackages: [ pythonPackages.pynvim ];
     inherit (neovimConfig) configure;
   };
 in

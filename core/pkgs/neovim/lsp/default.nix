@@ -19,9 +19,4 @@ let
     inherit nodeEnv;
   };
 in
-js // {
-
-  import-js = js.import-js.override {
-    buildInputs = [ nodePackages.node-pre-gyp ];
-  };
-}
+js
