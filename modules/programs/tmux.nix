@@ -33,13 +33,13 @@ with pkgs.tmuxPlugins; {
 
       set-option -g status-style bg=black,fg=yellow #,attr=default
       set-window-option -g window-status-style bg=default,fg=white #,attr=dim
-      set-window-option -g window-status-current-style bg=default,fg=cyan #,attr=dim
+      set-window-option -g window-status-current-style bg=default,fg=brightblue #,attr=dim
       set-window-option -g window-status-activity-style bg=black,fg=brightred
       set-option -g message-style bg=black,fg=brightred
-      set-option -g display-panes-active-colour cyan
+      set-option -g display-panes-active-colour brightblue
       set-option -g display-panes-colour brightred
       set -g status-left ""
-      set -g status-right "#{?client_prefix,#[fg=black]#[bg=cyan],#[fg=cyan]#[bg=black]} #h"
+      set -g status-right "#{?client_prefix,#[fg=black]#[bg=brightblue],#[fg=brightblue]#[bg=black]} #h"
     '';
   };
 }
