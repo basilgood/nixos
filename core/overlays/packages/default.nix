@@ -16,4 +16,5 @@ rec {
   yarn-completion = callPackage ../../pkgs/yarn-completion/default.nix {};
   neovim = callPackage ../../pkgs/neovim {};
   kak = callPackage ../../pkgs/kakoune {};
+  matrix-dimension = callPackage ../../pkgs/matrix-dimension {};
 }

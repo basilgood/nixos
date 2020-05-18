@@ -15,5 +15,6 @@
       ./virtualisation/virtualbox.nix
       ./virtualisation/wine.nix
       ./programs/sway
+      ./programs/matrix-dimension
    ];
   }
