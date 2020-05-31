@@ -2,8 +2,6 @@
 set main-view = \
   line-number:no,interval=5 \
   id:yes \
-  date:relative-compact \
-  author:email-user \
   commit-title:yes,graph,refs,overflow=no
 set refs-view = \
   line-number:no \
@@ -19,5 +17,12 @@ set refresh-mode               = periodic
 set refresh-interval           = 3
 set line-graphics              = utf-8
 
-# copy sha to clipboard
-bind generic Y !@sh -c "echo -n %(commit) | wl-copy"
+color cursor        default 237   bold
+color status        250   235
+color title-focus   16    24      bold
+color title-blur    16    24      bold
+color id            0     default bold
+color "Merge: "     cyan  default
+color graph-commit  red default
+
+bind generic . !@sh -c "echo -n %(commit) | wl-copy"
