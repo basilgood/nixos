@@ -3,7 +3,7 @@
 {
   imports = [
     ./modules
-    ./local.nix
+    # ./local.nix
     ./hosts/merlin
   ];
 }
