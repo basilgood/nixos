@@ -59,14 +59,13 @@ in
     environment.etc."sway/config".text = with pkgs; ''
       include "${sway}/etc/sway/config"
 
-      set $swaylock ${swaylock}/bin/swaylock
       set $brightness ${brightnessctl}/bin/brightnessctl
       set $grim ${grim}/bin/grim
       set $mogrify ${imagemagick}/bin/mogrify
       set $slurp ${slurp}/bin/slurp
       set $mako ${mako}/bin/mako
       set $idle ${swayidle}/bin/swayidle
-      set $lock $grim /tmp/lock.png && $mogrify -scale 10% -scale 1000% /tmp/lock.png && $swaylock -f -i /tmp/lock.png
+      set $lock ${swaylock}/bin/swaylock -c 550000
       set $menu ${cfg.menu}
       set $term ${cfg.terminal}
 
@@ -95,11 +94,11 @@ in
 
       bindsym --release $mod+Control+l exec loginctl lock-session
       exec $idle -w \
-        timeout 300 '$lock' \
-        timeout 600 'swaymsg "output * dpms off"' \
+        timeout 300 'swaymsg "output * dpms off"' \
           resume 'swaymsg "output * dpms on"' \
-        before-sleep '$lock' \
-        lock '$lock'
+        timeout 600 $lock \
+        timeout 900 $suspend \
+        before-sleep $lock
 
       gaps inner 2
       gaps outer 0
