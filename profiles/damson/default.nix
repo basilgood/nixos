@@ -5,12 +5,12 @@
     ../fonts
     ../base
     ../base-desktop
-    ./scripts
   ];
 
   users.defaultUser = {
     name = "vasy";
     packages = with pkgs; [
+      wget
       unzip
       zip
       unrar
@@ -18,9 +18,12 @@
       bat
       usbutils
       psmisc
+      hicolor_icon_theme
       tig
       fzf
       kak
+      nix-bash-completions
+      nix-prefetch-scripts
       aspell
       aspellDicts.en
       libnotify
@@ -66,9 +69,58 @@
     };
 
     bash = {
-      shellAliases = {
-        glog = "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' --all";
-      };
+      interactiveShellInit = ''
+        __fzf_history__() {
+           local output
+           output=$(
+             builtin history -n
+             builtin fc -lnr -2147483648 |
+               last_hist=$(HISTTIMEFORMAT=''' builtin history 1) ${pkgs.perl}/bin/perl -n -l0 -e 'BEGIN { getc; $/ = "\n\t"; $HISTCMD = $ENV{last_hist} + 1 } s/^[ *]//; print $HISTCMD - $. . "\t$_" if !$seen{$_}++' |
+               FZF_DEFAULT_OPTS="--height 30% $FZF_DEFAULT_OPTS -n2..,.. --reverse --tiebreak=index --bind=ctrl-r:toggle-sort +m --read0" ${pkgs.fzf}/bin/fzf --query "$READLINE_LINE"
+           ) || return
+           READLINE_LINE=''${output#*$'\t'}
+           if [ -z "$READLINE_POINT" ]; then
+             echo "$READLINE_LINE"
+           else
+             READLINE_POINT=0x7fffffff
+           fi
+        }
+        bind -x '"\C-r": __fzf_history__'
+        gl() {
+          local cmd files
+          files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*")
+          cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | cat"
+          eval "${pkgs.git-foresta}/bin/git-foresta --topo-order --all" |
+            fzf \
+            --tiebreak=index --ansi --reverse \
+            --bind=ctrl-s:toggle-sort \
+            --bind=enter:execute:"$cmd | LESS='-R' less" \
+            --bind=ctrl-y:execute-silent:"echo {} |grep -Eo '[a-f0-9]+' | head -1 | ''${COPY_CMD:-wl-copy -n}"
+        }
+        gstatus() {
+          git -c color.status=always status -su
+        }
+        git_status="git -c color.status=always status -su"
+        git_diff="git diff --color=always -- {-1} | less -R"
+        git_diff_cached="git diff --cached $@ --color=always -- {-1} | less -R"
+        git_add="xargs git add {-1}"
+        git_add_p="xargs git add -p {-1} < /dev/tty"
+        git_reset="xargs git reset {-1}"
+        git_discard="xargs git checkout {-1}"
+        git_commit="git commit -v"
+        gs() {
+          gstatus |
+            fzf --reverse --multi --ansi --tiebreak=index \
+              --prompt "::$(git branch --show-current)::" \
+              --header "git status:" \
+              --bind "enter:execute(if (git diff --quiet); then $git_diff_cached; else $git_diff; fi)" \
+              --bind "alt-a:execute-silent($git_add)+reload($git_status)" \
+              --bind "alt-p:execute($git_add_p)+reload($git_status)" \
+              --bind "alt-r:execute-silent($git_reset)+reload($git_status)" \
+              --bind "alt-x:execute-silent($git_discard)+reload($git_status)" \
+              --bind "alt-c:execute(git commit -v)+reload($git_status)"
+        }
+      '';
     };
 
     git = {
@@ -78,7 +130,7 @@
         email = elsile69@yahoo.com
       '';
       core = ''
-        editor = ${pkgs.neovim_configured}/bin/nvim
+        editor = ${pkgs._vim}/bin/vim
         pager = ${pkgs.less}/bin/less -S
       '';
       diff = ''
@@ -99,90 +151,44 @@
         gitAndTools.tig
       ];
     };
+
     gnupg.agent = {
       enable = true;
     };
+    dconf.enable = true;
+  };
+
+  environment.etc."xdg/gtk-3.0/settings.ini" = {
+    text = ''
+      [Settings]
+      gtk-icon-theme-name=Paper
+      gtk-theme-name=Nordic-bluish-accent
+    '';
+    mode = "444";
   };
 
   environment.variables = {
-    VISUAL = "${pkgs.neovim_configured}/bin/nvim";
-    EDITOR = "${pkgs.neovim_configured}/bin/nvim";
+    VISUAL = "${pkgs._vim}/bin/vim";
+    EDITOR = "${pkgs._vim}/bin/vim";
     PAGER = "${pkgs.gitAndTools.diff-so-fancy}/bin/diff-so-fancy | ${pkgs.less}/bin/less --tabs=1,5 -RS";
     BAT_PAGER = "${pkgs.less}/bin/less -irRSx4";
     BAT_THEME = "TwoDark";
     MANPAGER = "${pkgs.bash}/bin/sh -c 'col -bx | ${pkgs.bat}/bin/bat -l man -p'";
-    PATH = [ "~/.local/bin" ];
+    PATH = [ "$HOME/.local/bin" ];
   };
 
   services = {
     redshift.enable = true;
     syncthing.enable = true;
+    syncthing.user = "vasy";
     syncthing.openDefaultPorts = true;
-    matrix-dimension = {
-      enable = true;
-      config = {
-        web = {
-          port = 8184;
-          adress = "1.0.0.0";
-        };
-        homeserver = {
-          name = "t2bot.io";
-        };
-        accessToken = "something";
-        admins = [
-          "@someone:domain.com"
-        ];
-        widgetBlacklist = [
-          "10.0.0.0/8"
-          "172.16.0.0/12"
-          "192.168.0.0/16"
-          "127.0.0.0/8"
-        ];
-        database = {
-          file = "dimension.db";
-        };
-        botData = "dimension.bot.json";
-        goneb = {
-          avatars = {
-            giphy = "mxc://t2bot.io/c5eaab3ef0133c1a61d3c849026deb27";
-            imgur = "mxc://t2bot.io/6749eaf2b302bb2188ae931b2eeb1513";
-            github = "mxc://t2bot.io/905b64b3cd8e2347f91a60c5eb0832e1";
-            wikipedia = "mxc://t2bot.io/7edfb54e9ad9e13fec0df22636feedf1";
-            travisci = "mxc://t2bot.io/7f4703126906fab8bb27df34a17707a8";
-            rss = "mxc://t2bot.io/aace4fcbd045f30afc1b4e5f0928f2f3";
-            google = "mxc://t2bot.io/636ad10742b66c4729bf89881a505142";
-            guggy = "mxc://t2bot.io/e7ef0ed0ba651aaf907655704f9a7526";
-            echo = "mxc://t2bot.io/3407ff2db96b4e954fcbf2c6c0415a13";
-            circleci = "mxc://t2bot.io/cf7d875845a82a6b21f5f66de78f6bee";
-            jira = "mxc://t2bot.io/f4a38ebcc4280ba5b950163ca3e7c329";
-          };
-        };
-        telegram = {
-          botToken = "YourTokenHere";
-        };
-        stickers = {
-          enabled = true;
-          stickerBot = "@stickers:t2bot.io";
-          managerUrl = "https://stickers.t2bot.io";
-        };
-        dimension = {
-          publicUrl = "https://dimension.example.org";
-        };
-        logging = {
-          file = "logs/dimension.log";
-          console = true;
-          consoleLevel = "info";
-          fileLevel = "verbose";
-          rotate = {
-            size = 52428800;
-            count = 5;
-          };
-        };
-      };
-    };
+    syncthing.dataDir = "/home/vasy/Sync";
+    syncthing.configDir = "/home/vasy/Sync/.config/syncthing";
   };
 
-  hardware.sane.enable = true;
-  hardware.bluetooth.enable = true;
+  nix.package = pkgs.nixFlakes;
 
+  nix.extraOptions = ''
+    experimental-features = nix-command flakes ca-references recursive-nix progress-bar
+  '';
 }
