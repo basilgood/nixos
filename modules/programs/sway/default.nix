@@ -110,28 +110,29 @@ in
       font pango: monospace 9
 
       # Status Bar:
+      # colors
+      set $bgcolor 161821
+      set $fgcolor 2e617d
+      set $txtcolor DFEFE2
+      set $urgent EF6155
       bar bar-0 position bottom
       bar bar-0 font pango: monospace 9
       bar bar-0 mode dock
       bar bar-0 modifier none
       bindsym $mod+m bar mode toggle
       bar bar-0 colors {
-        background #2E3440
-        statusline #839496
-        separator  #777777
-
-        focused_workspace  #4C7899 #285577 #D8DEE9
-        active_workspace   #333333 #4C7899 #D8DEE9
-        inactive_workspace #3B4252 #2E3440 #888888
-        urgent_workspace   #2F343A #900000 #D8DEE9
-        binding_mode       #2F343A #900000 #D8DEE9
+        background #$bgcolor
+        statusline #$txtcolor
+        separator #$txtcolor
+        focused_workspace  #$fgcolor #$fgcolor #$bgcolor
+        inactive_workspace #$bgcolor #$bgcolor #$txtcolor
       }
 
       exec --no-startup-id $mako --default-timeout=10000 \
         --font='sansSerif 9' \
-        --background-color=#282c34 \
+        --background-color=#$bgcolor \
         --border-size=0 \
-        --border-color=#0059a3 \
+        --border-color=#$txtcolor \
         --max-icon-size=20
 
       set $gnome-schema org.gnome.desktop.interface
