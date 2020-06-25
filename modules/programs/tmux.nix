@@ -21,6 +21,7 @@ with pkgs.tmuxPlugins; {
       bind -r J resize-pane -D 5
       bind -r H resize-pane -L 5
       bind -r L resize-pane -R 5
+      bind-key -T copy-mode C-y send-keys -X begin-selection
 
       set -ga terminal-overrides ",*col*:Tc"
       set-window-option -g automatic-rename on
