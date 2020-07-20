@@ -16,4 +16,5 @@ rec {
   yarn-completion = callPackage ../../pkgs/yarn-completion/default.nix {};
   neovim_configured = callPackage ../../pkgs/neovim {};
   kak = callPackage ../../pkgs/kakoune {};
+  _vim = callPackage ../../pkgs/vim {};
 }
