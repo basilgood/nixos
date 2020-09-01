@@ -115,17 +115,24 @@ in
       set $fgcolor 2e617d
       set $txtcolor DFEFE2
       set $urgent EF6155
-      bar bar-0 position bottom
-      bar bar-0 font pango: monospace 9
-      bar bar-0 mode dock
-      bar bar-0 modifier none
-      bindsym $mod+m bar mode toggle
-      bar bar-0 colors {
-        background #$bgcolor
-        statusline #$txtcolor
-        separator #$txtcolor
-        focused_workspace  #$fgcolor #$fgcolor #$bgcolor
-        inactive_workspace #$bgcolor #$bgcolor #$txtcolor
+
+      bar bar-0 {
+        position bottom
+        ${ if (cfg.status != null) then "status_command ${cfg.status}" else "" }
+        status_padding 0
+        font monospace 9
+        mode dock
+        modifier none
+        separator_symbol “⁞”
+        colors {
+          statusline #$txtcolor
+          background #$bgcolor
+          focused_workspace #2b7ab2 #2b7ab2 #fbffff
+          active_workspace #6d7782 #6d7782 #fbffff
+          inactive_workspace #161821 #161821 #DFEFE2
+          urgent_workspace #ae5865 #ae5865 #fbffff
+        }
+        icon_theme Paper
       }
 
       exec --no-startup-id $mako --default-timeout=10000 \
@@ -146,7 +153,6 @@ in
       }
       bindsym $mod+Pause mode passthrough
 
-      ${ if (cfg.status != null) then "bar bar-0 status_command ${cfg.status}" else "" }
       ${cfg.extraConfig}
     '';
   };
