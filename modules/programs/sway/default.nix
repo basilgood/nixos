@@ -110,12 +110,6 @@ in
       font pango: monospace 9
 
       # Status Bar:
-      # colors
-      set $bgcolor 161821
-      set $fgcolor 2e617d
-      set $txtcolor DFEFE2
-      set $urgent EF6155
-
       bar bar-0 {
         position bottom
         ${ if (cfg.status != null) then "status_command ${cfg.status}" else "" }
@@ -123,14 +117,13 @@ in
         font monospace 9
         mode dock
         modifier none
-        separator_symbol “⁞”
         colors {
-          statusline #$txtcolor
-          background #$bgcolor
-          focused_workspace #2b7ab2 #2b7ab2 #fbffff
-          active_workspace #6d7782 #6d7782 #fbffff
-          inactive_workspace #161821 #161821 #DFEFE2
-          urgent_workspace #ae5865 #ae5865 #fbffff
+          statusline #888888
+          background #202023
+          focused_workspace  #247aa8 #2c2c2e #247aa8
+          active_workspace   #2c2c2e #2c2c2e #247aa8
+          inactive_workspace #2c2c2e #2c2c2e #8f8f8f
+          urgent_workspace   #e89393 #2c2c2e #FCBF69
         }
         icon_theme Paper
       }
