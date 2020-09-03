@@ -111,22 +111,22 @@ in
       font pango: monospace 9
 
       # Status Bar:
-      # colors
-      set $bgcolor 161821
-      set $fgcolor 2e617d
-      set $txtcolor DFEFE2
-      set $urgent EF6155
-      bar bar-0 position bottom
-      bar bar-0 font pango: monospace 9
-      bar bar-0 mode dock
-      bar bar-0 modifier none
-      bindsym $mod+m bar mode toggle
-      bar bar-0 colors {
-        background #$bgcolor
-        statusline #$txtcolor
-        separator #$txtcolor
-        focused_workspace  #$fgcolor #$fgcolor #$bgcolor
-        inactive_workspace #$bgcolor #$bgcolor #$txtcolor
+      bar bar-0 {
+        position bottom
+        ${ if (cfg.status != null) then "status_command ${cfg.status}" else "" }
+        status_padding 0
+        font monospace 9
+        mode dock
+        modifier none
+        colors {
+          statusline #888888
+          background #202023
+          focused_workspace  #247aa8 #2c2c2e #247aa8
+          active_workspace   #2c2c2e #2c2c2e #247aa8
+          inactive_workspace #2c2c2e #2c2c2e #8f8f8f
+          urgent_workspace   #e89393 #2c2c2e #FCBF69
+        }
+        icon_theme Paper
       }
 
       exec --no-startup-id $mako --default-timeout=10000 \
@@ -147,7 +147,6 @@ in
       }
       bindsym $mod+Pause mode passthrough
 
-      ${ if (cfg.status != null) then "bar bar-0 status_command ${cfg.status}" else "" }
       ${cfg.extraConfig}
     '';
   };
