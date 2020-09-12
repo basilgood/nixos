@@ -15,6 +15,7 @@ rec {
   shells = callPackage ../../pkgs/shells/default.nix {};
   yarn-completion = callPackage ../../pkgs/yarn-completion/default.nix {};
   _vim = callPackage ../../pkgs/vim {};
+  git-foresta = callPackage ../../pkgs/git-foresta {};
   kak = callPackage ../../pkgs/kakoune {};
   matrix-dimension = callPackage ../../pkgs/matrix-dimension {};
 }
