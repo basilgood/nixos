@@ -18,4 +18,5 @@ rec {
   kak = callPackage ../../pkgs/kakoune {};
   _vim = callPackage ../../pkgs/vim {};
   git-foresta = callPackage ../../pkgs/git-foresta {};
+  fzf-tab-completion = callPackage ../../pkgs/fzf-tab-completion {};
 }
