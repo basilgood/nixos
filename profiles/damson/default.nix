@@ -118,8 +118,10 @@
               --bind "alt-p:execute($git_add_p)+reload($git_status)" \
               --bind "alt-r:execute-silent($git_reset)+reload($git_status)" \
               --bind "alt-x:execute-silent($git_discard)+reload($git_status)" \
-              --bind "alt-c:execute(git commit -v)+reload($git_status)"
+              --bind "alt-c:execute($git_commit)+reload($git_status)"
         }
+        source ${pkgs.fzf-tab-completion}/fzf-bash-completion.sh
+        bind -x '"\t": fzf_bash_completion'
       '';
     };
 
