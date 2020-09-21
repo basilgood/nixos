@@ -16,6 +16,7 @@ rec {
   yarn-completion = callPackage ../../pkgs/yarn-completion/default.nix {};
   _vim = callPackage ../../pkgs/vim {};
   git-foresta = callPackage ../../pkgs/git-foresta {};
+  fzf-tab-completion = callPackage ../../pkgs/fzf-tab-completion {};
   kak = callPackage ../../pkgs/kakoune {};
   matrix-dimension = callPackage ../../pkgs/matrix-dimension {};
 }
