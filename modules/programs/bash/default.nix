@@ -65,7 +65,7 @@
       bind "set skip-completed-text on"
       bind "set bell-style none"
 
-      bind '"\t": menu-complete'
+      # bind '"\t": menu-complete'
       bind '"\e[Z": menu-complete-backward'
       bind '"\e[A": history-search-backward'
       bind '"\e[B": history-search-forward'
