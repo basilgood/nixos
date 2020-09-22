@@ -267,8 +267,8 @@ let
       src = fetchFromGitHub {
         owner = "basilgood";
         repo = "min.vim";
-        rev = "6b4ecfaaa205f709c8b12db15882f4e6c7612db4";
-        hash = "sha256-oKRBCgNavBNwPOG10NvbJr5eKik3ujCKlv1Zi23Bfjs=";
+        rev = "61eacb680dadb764a98222baef244bed002ae6e6";
+        hash = "sha256-9pzwXpnezn2Js78JJSYitF5ofmLlrpk3Ws4ch3IBLLU=";
       };
     };
   };
@@ -299,12 +299,7 @@ let
       \ 'down': '~30%',
       \ 'options': '-m --bind=ctrl-a:select-all,ctrl-d:deselect-all'
       \ }))<cr>
-    nnoremap <silent> <bs> :call fzf#run(fzf#wrap('buffers', fzf#vim#with_preview(
-      \ {'source': map(range(1, bufnr('$')), 'bufname(v:val)'),
-      \ 'sink': 'e',
-      \ 'down': '30%',
-      \ },
-      \ )))<cr>
+    nnoremap <silent> <bs> :Buffers<cr>
 
     function! RipgrepFzf(query, fullscreen)
       let command_fmt = 'rg --column --line-number --no-heading --color=always --hidden --smart-case -g "!.git" %s || true'
@@ -353,31 +348,14 @@ let
     let g:EditorConfig_exclude_patterns = ['fugitive://.*']
   '';
 
-  cocCfg = ''
-    let g:coc_user_config = {}
-    let g:coc_user_config = {
-          \ 'suggest': {
-          \ 'autoTrigger': 'always',
-          \ 'triggerAfterInsertEnter': 'true',
-          \ 'timeout': '5000',
-          \ 'triggerCompletionWait': '300',
-          \ 'minTriggerInputLength': '2',
-          \ 'noselect': 'true',
-          \ 'enablePreview': 'true',
-          \ 'preferCompleteThanJumpPlaceholder': 'true',
-          \ 'detailField':'abbr',
-          \ 'acceptSuggestionOnCommitCharacter': 'true',
-          \ 'keepCompleteopt': 'true',
-          \ }
-          \ }
-    let g:coc_user_config.languageserver = {}
-    let g:coc_user_config.languageserver = {
-          \ 'typescript': {
-          \ 'command': 'typescript-language-server',
-          \ 'args': ['--stdio'],
-          \ 'filetypes': ['javascript', 'typescript'],
-          \ }
-          \ }
+  completeCfg = ''
+    let g:ycm_show_diagnostics_ui = 0
+    let g:ycm_complete_in_comments = 1
+    let g:ycm_collect_identifiers_from_comments_and_strings = 1
+    let g:ycm_seed_identifiers_with_syntax = 1
+    let g:ycm_key_list_stop_completion = ['<Enter>']
+    let g:ycm_auto_hover='''
+    autocmd vimRc Filetype javascript,typescript nmap <leader>h <plug>(YCMHover)
   '';
 
   aleCfg = ''
@@ -488,7 +466,7 @@ let
     autocmd vimRc FileType nix setlocal makeprg=nix-instantiate\ --parse
     autocmd vimRc FileType nix setlocal formatprg=nixpkgs-fmt
     autocmd vimRc BufRead,BufNewFile *.nix command! F silent call system('nixpkgs-fmt ' . expand('%'))
-    autocmd vimRc BufRead,BufNewFile *.js,*.jsx,*.ts,*.tsx command! F silent call system('prettier --single-quote --write ' . expand('%'))
+    autocmd vimRc BufRead,BufNewFile *.js,*.jsx,*.ts,*.tsx command! F silent call system('prettier --single-quote --no-bracket-spacing --write ' . expand('%'))
     autocmd vimRc BufRead,BufNewFile *.js,*.jsx command! Fix silent call system('eslint --fix ' . expand('%'))
     autocmd vimRc FileType yaml command! F silent call system('prettier --write ' . expand('%'))
     autocmd vimRc FileType sh command! F silent call system('shfmt -i 2 -ci -w ' . expand('%'))
@@ -602,7 +580,7 @@ let
       gitgutterCfg
       gitCfg
       editorconfigCfg
-      cocCfg
+      completeCfg
       aleCfg
       commandsCfg
       tracesCfg
@@ -612,7 +590,6 @@ let
       undoCfg
       ackCfg
       autocmdsCfg
-      commentCfg
       functionsCfg
       langsCfg
       endCfg
@@ -625,7 +602,7 @@ let
         altscreen
         quickfix-reflector-vim
         fzf-vim
-        coc-nvim
+        YouCompleteMe
       ];
 
       opt = [
