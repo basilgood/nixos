@@ -299,12 +299,7 @@ let
       \ 'down': '~30%',
       \ 'options': '-m --bind=ctrl-a:select-all,ctrl-d:deselect-all'
       \ }))<cr>
-    nnoremap <silent> <bs> :call fzf#run(fzf#wrap('buffers', fzf#vim#with_preview(
-      \ {'source': map(range(1, bufnr('$')), 'bufname(v:val)'),
-      \ 'sink': 'e',
-      \ 'down': '30%',
-      \ },
-      \ )))<cr>
+    nnoremap <silent> <bs> :Buffers<cr>
 
     function! RipgrepFzf(query, fullscreen)
       let command_fmt = 'rg --column --line-number --no-heading --color=always --hidden --smart-case -g "!.git" %s || true'
@@ -612,7 +607,6 @@ let
       undoCfg
       ackCfg
       autocmdsCfg
-      commentCfg
       functionsCfg
       langsCfg
       endCfg
