@@ -267,8 +267,8 @@ let
       src = fetchFromGitHub {
         owner = "basilgood";
         repo = "min.vim";
-        rev = "6b4ecfaaa205f709c8b12db15882f4e6c7612db4";
-        hash = "sha256-oKRBCgNavBNwPOG10NvbJr5eKik3ujCKlv1Zi23Bfjs=";
+        rev = "61eacb680dadb764a98222baef244bed002ae6e6";
+        hash = "sha256-9pzwXpnezn2Js78JJSYitF5ofmLlrpk3Ws4ch3IBLLU=";
       };
     };
   };
@@ -348,31 +348,14 @@ let
     let g:EditorConfig_exclude_patterns = ['fugitive://.*']
   '';
 
-  cocCfg = ''
-    let g:coc_user_config = {}
-    let g:coc_user_config = {
-          \ 'suggest': {
-          \ 'autoTrigger': 'always',
-          \ 'triggerAfterInsertEnter': 'true',
-          \ 'timeout': '5000',
-          \ 'triggerCompletionWait': '300',
-          \ 'minTriggerInputLength': '2',
-          \ 'noselect': 'true',
-          \ 'enablePreview': 'true',
-          \ 'preferCompleteThanJumpPlaceholder': 'true',
-          \ 'detailField':'abbr',
-          \ 'acceptSuggestionOnCommitCharacter': 'true',
-          \ 'keepCompleteopt': 'true',
-          \ }
-          \ }
-    let g:coc_user_config.languageserver = {}
-    let g:coc_user_config.languageserver = {
-          \ 'typescript': {
-          \ 'command': 'typescript-language-server',
-          \ 'args': ['--stdio'],
-          \ 'filetypes': ['javascript', 'typescript'],
-          \ }
-          \ }
+  completeCfg = ''
+    let g:ycm_show_diagnostics_ui = 0
+    let g:ycm_complete_in_comments = 1
+    let g:ycm_collect_identifiers_from_comments_and_strings = 1
+    let g:ycm_seed_identifiers_with_syntax = 1
+    let g:ycm_key_list_stop_completion = ['<Enter>']
+    let g:ycm_auto_hover='''
+    autocmd vimRc Filetype javascript,typescript nmap <leader>h <plug>(YCMHover)
   '';
 
   aleCfg = ''
@@ -597,7 +580,7 @@ let
       gitgutterCfg
       gitCfg
       editorconfigCfg
-      cocCfg
+      completeCfg
       aleCfg
       commandsCfg
       tracesCfg
@@ -619,7 +602,7 @@ let
         altscreen
         quickfix-reflector-vim
         fzf-vim
-        coc-nvim
+        YouCompleteMe
       ];
 
       opt = [
