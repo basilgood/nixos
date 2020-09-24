@@ -40,4 +40,15 @@
         }
     '';
   };
+  boot.kernelParams = [
+    "resume_offset=2842624"
+  ];
+  boot.resumeDevice = "/dev/disk/by-label/root";
+  swapDevices = [
+    {
+      device = "/swapfile";
+      priority = 0;
+      size = 2048;
+    }
+  ];
 }
