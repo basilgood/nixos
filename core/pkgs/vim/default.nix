@@ -267,8 +267,8 @@ let
       src = fetchFromGitHub {
         owner = "basilgood";
         repo = "min.vim";
-        rev = "61eacb680dadb764a98222baef244bed002ae6e6";
-        hash = "sha256-9pzwXpnezn2Js78JJSYitF5ofmLlrpk3Ws4ch3IBLLU=";
+        rev = "4f437f3b0f3eb962dd12527fe7055806590ad0ee";
+        hash = "sha256-TwAZMPwPywXbmV7enUDklze5lo6Q7K5zlG1Jpi+Wwsg=";
       };
     };
   };
