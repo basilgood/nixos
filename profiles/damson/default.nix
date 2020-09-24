@@ -124,6 +124,9 @@
         source ${pkgs.fzf-tab-completion}/fzf-bash-completion.sh
         bind -x '"\t": fzf_bash_completion'
       '';
+      shellAliases = {
+        hib="sudo sh -c 'echo -n disk > /sys/power/state'";
+      };
     };
 
     git = {
