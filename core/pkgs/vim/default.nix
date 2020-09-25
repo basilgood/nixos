@@ -466,7 +466,7 @@ let
     autocmd vimRc FileType nix setlocal makeprg=nix-instantiate\ --parse
     autocmd vimRc FileType nix setlocal formatprg=nixpkgs-fmt
     autocmd vimRc BufRead,BufNewFile *.nix command! F silent call system('nixpkgs-fmt ' . expand('%'))
-    autocmd vimRc BufRead,BufNewFile *.js,*.jsx,*.ts,*.tsx command! F silent call system('prettier --single-quote --no-bracket-spacing --write ' . expand('%'))
+    autocmd vimRc BufRead,BufNewFile *.js,*.jsx,*.ts,*.tsx command! F silent call system('prettier --single-quote --write ' . expand('%'))
     autocmd vimRc BufRead,BufNewFile *.js,*.jsx command! Fix silent call system('eslint --fix ' . expand('%'))
     autocmd vimRc FileType yaml command! F silent call system('prettier --write ' . expand('%'))
     autocmd vimRc FileType sh command! F silent call system('shfmt -i 2 -ci -w ' . expand('%'))
