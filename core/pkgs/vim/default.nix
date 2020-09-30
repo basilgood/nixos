@@ -61,6 +61,7 @@ let
     set synmaxcol=200
     set sidescrolloff=10
     set sidescroll=1
+    set formatoptions+=j
     let &showbreak = '↳ '
     set breakat=\ \ ;:,!?
     set breakindent
@@ -262,13 +263,23 @@ let
       };
     };
 
+    html-template = buildVimPluginFrom2Nix {
+      name = "vim-html-template-literals";
+      src = fetchFromGitHub {
+        owner = "jonsmithers";
+        repo = "vim-html-template-literals";
+        rev = "602dba70bdcfc2e280e0c0503e74a8a92519db49";
+        hash = "sha256-if70JhYTeuvj7jPxzVl7lFOwG5JuofM0KiCPF1ldGnQ=";
+      };
+    };
+
     min = buildVimPluginFrom2Nix {
       name = "min";
       src = fetchFromGitHub {
         owner = "basilgood";
         repo = "min.vim";
-        rev = "4f437f3b0f3eb962dd12527fe7055806590ad0ee";
-        hash = "sha256-TwAZMPwPywXbmV7enUDklze5lo6Q7K5zlG1Jpi+Wwsg=";
+        rev = "7e81a457fbcdf40166e67a298e865590109da94e";
+        hash = "sha256-LBlbgJia0Pk+Z3zpggKiuCejhHXZgQH1LHEE/27Pj0g=";
       };
     };
   };
@@ -354,6 +365,7 @@ let
     let g:ycm_collect_identifiers_from_comments_and_strings = 1
     let g:ycm_seed_identifiers_with_syntax = 1
     let g:ycm_key_list_stop_completion = ['<Enter>']
+    let g:ycm_key_invoke_completion = '<C-y>'
     let g:ycm_auto_hover='''
     autocmd vimRc Filetype javascript,typescript nmap <leader>h <plug>(YCMHover)
   '';
@@ -442,23 +454,7 @@ let
   '';
 
   langsCfg = ''
-    autocmd vimRc BufReadPre *.js,*.jsx
-          \ execute 'packadd vim-javascript'
     let g:javascript_plugin_jsdoc = 1
-    autocmd vimRc BufReadPre *.js,*.jsx
-          \ execute 'packadd vim-html-template-literals'
-    let g:htl_all_templates = 1
-    let g:htl_css_templates = 1
-    autocmd vimRc BufReadPre *.md
-          \ execute 'packadd vim-markdown'
-    autocmd vimRc FileType markdown setlocal conceallevel=2
-    let g:vim_markdown_folding_disabled = 1
-    autocmd vimRc BufReadPre *.jinja
-          \ execute 'packadd vim-jinja'
-    autocmd vimRc BufReadPre *.twig
-          \ execute 'packadd vim-twig'
-    autocmd vimRc BufReadPre *.coffee
-          \ execute 'packadd vim-coffee-script'
   '';
 
   autocmdsCfg = ''
@@ -603,6 +599,7 @@ let
         quickfix-reflector-vim
         fzf-vim
         YouCompleteMe
+        vim-polyglot
       ];
 
       opt = [
@@ -623,12 +620,6 @@ let
         cmdline-completion
         hlyank
         undotree
-        vim-html-template-literals
-        vim-javascript
-        vim-coffee-script
-        vim-jinja
-        vim-twig
-        vim-markdown
         min
       ];
     };
