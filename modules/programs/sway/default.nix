@@ -59,14 +59,14 @@ in
     environment.etc."sway/config".text = with pkgs; ''
       include "${sway}/etc/sway/config"
 
-      set $swaylock ${swaylock}/bin/swaylock
+      set $swaylock ${swaylock-effects}/bin/swaylock-effects
       set $brightness ${brightnessctl}/bin/brightnessctl
       set $grim ${grim}/bin/grim
       set $mogrify ${imagemagick}/bin/mogrify
       set $slurp ${slurp}/bin/slurp
       set $mako ${mako}/bin/mako
       set $idle ${swayidle}/bin/swayidle
-      set $lock $grim /tmp/lock.png && $mogrify -scale 10% -scale 1000% /tmp/lock.png && $swaylock -f -i /tmp/lock.png
+      set $lock swaylock -f --screenshots --clock --fade-in 0.2 --effect-scale 0.4 --effect-vignette 0.2:0.5 --effect-blur 2x2 --grace 5
       set $menu ${cfg.menu}
       set $term ${cfg.terminal}
 
@@ -93,12 +93,10 @@ in
 
       bindsym Print exec $slurp | $grim -g - - | wl-copy
 
-      bindsym --release $mod+Control+l exec loginctl lock-session
+      bindsym --release $mod+ctrl+l exec '$lock'
       exec $idle -w \
         timeout 300 '$lock' \
-        timeout 600 'swaymsg "output * dpms off"' \
-          resume 'swaymsg "output * dpms on"' \
-        before-sleep '$lock' \
+        timeout 600 'systemctl suspend' \
         lock '$lock'
 
       gaps inner 2
