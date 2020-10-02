@@ -27,9 +27,9 @@
       feh
       zathura
       firefox
-      chromium
+      # chromium
+      (import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/502845c3e31ef3de0e424f3fcb09217df2ce6df6.tar.gz") {}).chromium
       keepassxc
-      libnotify
       _vim
       parsec-client
 
