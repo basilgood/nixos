@@ -127,12 +127,16 @@ in
         icon_theme Paper
       }
 
-      exec --no-startup-id $mako --default-timeout=10000 \
-        --font='sansSerif 9' \
-        --background-color=#$bgcolor \
-        --border-size=0 \
-        --border-color=#$txtcolor \
-        --max-icon-size=20
+      exec --no-startup-id $mako \
+      --max-visible=1 \
+      --layer=overlay \
+      --font=monospace 10 \
+      --text-color=#b3b1ad \
+      --background-color=#000000 \
+      --border-color=#1f1a10 \
+      --border-size=2 \
+      --border-radius=5 \
+      --default-timeout=10000
 
       set $gnome-schema org.gnome.desktop.interface
       exec_always {
@@ -144,6 +148,7 @@ in
         bindsym $mod+Pause mode default
       }
       bindsym $mod+Pause mode passthrough
+      for_window [class="^.*"] inhibit_idle fullscreen
 
       ${cfg.extraConfig}
     '';
