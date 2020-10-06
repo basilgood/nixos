@@ -481,7 +481,12 @@ let
     autocmd vimRc BufWritePost * if &filetype ==# ''' | filetype detect | endif
 
     " external changes
-    autocmd vimRc FocusGained,CursorHold * if !bufexists("[Command Line]") | checktime | GitGutter | endif
+    autocmd vimRc FocusGained,CursorHold *
+          \ if !bufexists("[Command Line]") |
+          \ checktime |
+          \ if exists('g:loaded_gitgutter') |
+          \   call gitgutter#all(1) |
+          \ endif
 
     " omnicomplete
     autocmd vimRc Filetype *
