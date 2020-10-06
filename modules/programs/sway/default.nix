@@ -40,9 +40,13 @@ in
         xdg_utils
         wl-clipboard
         lm_sensors
+        imv
       ]);
       extraSessionCommands = ''
         export XKB_DEFAULT_LAYOUT=us
+        export XDG_SESSION_TYPE=wayland
+        export XDG_SESSION_DESKTOP=sway
+        export DESKTOP_SESSION=sway
         export XDG_DATA_DIRS=${
           let schema = pkgs.gsettings-desktop-schemas;
             in "${schema}/share/gsettings-schemas/${schema.name}"
@@ -62,7 +66,6 @@ in
       set $swaylock ${swaylock-effects}/bin/swaylock-effects
       set $brightness ${brightnessctl}/bin/brightnessctl
       set $grim ${grim}/bin/grim
-      set $mogrify ${imagemagick}/bin/mogrify
       set $slurp ${slurp}/bin/slurp
       set $mako ${mako}/bin/mako
       set $idle ${swayidle}/bin/swayidle
