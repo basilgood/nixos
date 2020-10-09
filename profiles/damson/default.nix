@@ -27,10 +27,9 @@
       feh
       zathura
       firefox
-      # chromium
-      (import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/502845c3e31ef3de0e424f3fcb09217df2ce6df6.tar.gz") {}).chromium
+      (chromium.override { enableVaapi = true; })
       keepassxc
-      _vim
+      vimHugeX
       parsec-client
 
       (weechat.override {
@@ -121,7 +120,7 @@
         bind -x '"\t": fzf_bash_completion'
       '';
       shellAliases = {
-        hib="sudo sh -c 'echo -n disk > /sys/power/state'";
+        hib = "sudo sh -c 'echo -n disk > /sys/power/state'";
       };
     };
 
@@ -187,6 +186,16 @@
     syncthing.dataDir = "/home/vasy/Sync";
     syncthing.configDir = "/home/vasy/Sync/.config/syncthing";
   };
+
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-wlr
+    ];
+    gtkUsePortal = true;
+  };
+
+  services.pipewire.enable = true;
 
   nix.package = pkgs.nixFlakes;
 
