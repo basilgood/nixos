@@ -559,15 +559,16 @@ let
   '';
 
   vim_configured = ((vim_configurable.overrideAttrs (oldAttrs: rec {
-    version = "8.2.1709";
+    version = "8.2.1807";
     src = fetchFromGitHub {
       owner = "vim";
       repo = "vim";
       rev = "v${version}";
-      hash = "sha256-mtgjPzeFgxJVAauyeQukYvmADNNgN5SmbM/3PivskSA=";
+      hash = "sha256-U6EK7nSfiSQ9GJetUgKxbux8GgUMCvczDnRZYX+vQrw=";
     };
   })).override {
     python = python3;
+    ftNixSupport = false;
   }).customize {
     name = "vim";
     vimrcConfig.customRC = cfgConcat [
