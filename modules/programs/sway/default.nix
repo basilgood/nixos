@@ -40,6 +40,7 @@ in
         xdg_utils
         wl-clipboard
         lm_sensors
+        swaylock-effects
       ]);
       extraSessionCommands = ''
         export XKB_DEFAULT_LAYOUT=us
@@ -59,14 +60,18 @@ in
     environment.etc."sway/config".text = with pkgs; ''
       include "${sway}/etc/sway/config"
 
-      set $swaylock ${swaylock}/bin/swaylock
+      set $fg #839496
+      set $bg #2E3440
+      set $bgf #141417
+      set $fgi #888888
+
+      set $swaylock ${swaylock-effects}/bin/swaylock
       set $brightness ${brightnessctl}/bin/brightnessctl
       set $grim ${grim}/bin/grim
-      set $mogrify ${imagemagick}/bin/mogrify
       set $slurp ${slurp}/bin/slurp
       set $mako ${mako}/bin/mako
       set $idle ${swayidle}/bin/swayidle
-      set $lock $grim /tmp/lock.png && $mogrify -scale 10% -scale 1000% /tmp/lock.png && $swaylock -f -i /tmp/lock.png
+      set $lock $swaylock -f --screenshots --clock --effect-blur 7x5
       set $menu ${cfg.menu}
       set $term ${cfg.terminal}
 
@@ -93,13 +98,15 @@ in
 
       bindsym Print exec $slurp | $grim -g - - | wl-copy
 
-      bindsym --release $mod+Control+l exec loginctl lock-session
+      bindsym --release $mod+Control+l exec $lock --fade-in 0.2 --grace 5
+
       exec $idle -w \
-        timeout 300 '$lock' \
-        timeout 600 'swaymsg "output * dpms off"' \
-          resume 'swaymsg "output * dpms on"' \
+        timeout 300 '$lock --fade-in 0.2 --grace 5' \
+        timeout 900 'swaymsg "output * dpms off"' \
+        resume 'swaymsg "output * dpms on"' \
         before-sleep '$lock' \
-        lock '$lock'
+        lock '$lock' \
+        unlock 'pkill -KILL swaylock'
 
       gaps inner 2
       gaps outer 0
@@ -111,42 +118,39 @@ in
       font pango: monospace 9
 
       # Status Bar:
-      bar bar-0 position bottom
-      bar bar-0 font pango: monospace 9
-      bar bar-0 mode dock
-      bar bar-0 modifier none
-      bindsym $mod+m bar mode toggle
-      bar bar-0 colors {
-        background #2E3440
-        statusline #839496
-        separator  #777777
-
-        focused_workspace  #4C7899 #285577 #D8DEE9
-        active_workspace   #333333 #4C7899 #D8DEE9
-        inactive_workspace #3B4252 #2E3440 #888888
-        urgent_workspace   #2F343A #900000 #D8DEE9
-        binding_mode       #2F343A #900000 #D8DEE9
+      bar bar-0 {
+        position bottom
+        ${ if (cfg.status != null) then "status_command ${cfg.status}" else "" }
+        status_padding 0
+        font monospace 9
+        mode dock
+        modifier none
+        colors {
+          statusline $fg
+          background $bg
+          focused_background $bgf
+          focused_workspace $bg $bg $fg
+          active_workspace $bg $bg $fg
+          inactive_workspace $bg $bg $fgi
+        }
+        icon_theme Paper
       }
 
-      exec --no-startup-id $mako --default-timeout=10000 \
-        --font='sansSerif 9' \
-        --background-color=#282c34 \
-        --border-size=0 \
-        --border-color=#0059a3 \
-        --max-icon-size=20
-
-      set $gnome-schema org.gnome.desktop.interface
-      exec_always {
-        gsettings set $gnome-schema gtk-theme 'Nordic-bluish-accent'
-        gsettings set $gnome-schema icon-theme 'Paper'
-      }
+      exec --no-startup-id $mako \
+      --layer=overlay \
+      --font=monospace 10 \
+      --text-color=#b3b1ad \
+      --background-color=#000000 \
+      --border-color=#1f1a10 \
+      --border-size=2 \
+      --border-radius=5 \
+      --default-timeout=15000
 
       mode passthrough {
         bindsym $mod+Pause mode default
       }
       bindsym $mod+Pause mode passthrough
 
-      ${ if (cfg.status != null) then "bar bar-0 status_command ${cfg.status}" else "" }
       ${cfg.extraConfig}
     '';
   };
