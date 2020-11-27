@@ -103,10 +103,7 @@ in
       exec $idle -w \
         timeout 300 '$lock --fade-in 0.2 --grace 5' \
         timeout 900 'swaymsg "output * dpms off"' \
-        resume 'swaymsg "output * dpms on"' \
-        before-sleep '$lock' \
-        lock '$lock' \
-        unlock 'pkill -KILL swaylock'
+        resume 'swaymsg "output * dpms on"; pkill -nx swayidle'
 
       gaps inner 2
       gaps outer 0
