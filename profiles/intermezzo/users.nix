@@ -21,7 +21,7 @@
         ftNixSupport = false;
       })
       ((emacsPackagesNgGen emacs).emacsWithPackages (epkgs: [
-        epkgs.emacs-libvterm
+        epkgs.vterm
       ]))
       wget
       unzip
