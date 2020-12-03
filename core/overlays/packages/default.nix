@@ -14,6 +14,6 @@ rec {
   parsec-client = callPackage ../../pkgs/parsec/default.nix {};
   shells = callPackage ../../pkgs/shells/default.nix {};
   yarn-completion = callPackage ../../pkgs/yarn-completion/default.nix {};
-  neovim = callPackage ../../pkgs/neovim {};
+  # nvim = callPackage ../../pkgs/neovim {};
   kak = callPackage ../../pkgs/kakoune {};
 }

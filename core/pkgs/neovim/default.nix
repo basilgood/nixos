@@ -7,49 +7,44 @@
 , utf8proc
 , makeWrapper
 , fetchFromGitHub
-, ag
+, ripgrep
 , fd
 , fzf
 , git
+, tree-sitter
 , nodePackages
 , nixpkgs-fmt
 , editorconfig-core-c
-, python37Packages
+, python3Packages
 }:
 let
-  lsp = callPackage ./lsp {};
-  neovimConfig = callPackage ./config {};
-  neovim = wrapNeovim (
+  # lsp = callPackage ./lsp {};
+  # neovimConfig = callPackage ./config {};
+  nvim = wrapNeovim (
     neovim-unwrapped.overrideAttrs (
       old: rec {
-        name = "neovim-unwrapped-${version}";
-        version = "nightly";
+        version = "0.5.0";
         src = fetchFromGitHub {
           owner = "neovim";
           repo = "neovim";
-          rev = "a2efc9cf8b0fdf14b01156ba424145e1847f789c";
-          sha256 = "1d7i8087mjzbc9awqp3j0jr0pdn1k04kckml3wbbknws46fb27gx";
+          rev = "a1a4dd34ea26d397f7222afe943f67bbdb889d3f";
+          sha256 = "1d7i8087mjzbc9awqp3j0jr0pdn1k04kckml3wbbknws47fb27gx";
         };
-        nativeBuildInputs = old.nativeBuildInputs ++ [ utf8proc makeWrapper ];
+        nativeBuildInputs = old.nativeBuildInputs ++ [ utf8proc tree-sitter makeWrapper ];
         postInstall = old.postInstall + ''
           wrapProgram $out/bin/nvim --prefix PATH : ${lib.makeBinPath
           [
-            ag
+            ripgrep
             fzf
             git
             fd
-            lsp.vim-language-server
-            lsp.fixjson
             nodePackages.eslint
-            nodePackages.eslint_d
             nodePackages.prettier
             nodePackages.typescript
             nodePackages.typescript-language-server
-            nodePackages.vscode-html-languageserver-bin
-            nodePackages.vscode-css-languageserver-bin
             nixpkgs-fmt
             vim-vint
-            python37Packages.yamllint
+            python3Packages.yamllint
             editorconfig-core-c
           ]
         }
@@ -58,11 +53,11 @@ let
     )
   ) {
     withNodeJs = true;
-    vimAlias = true;
-    inherit (neovimConfig) configure;
+    extraPython3Packages = [ python3Packages.neovim ];
+    # inherit (neovimConfig) configure;
   };
 in
-neovim.overrideAttrs (
+nvim.overrideAttrs (
   old: rec {
     buildCommand = ''
       export HOME=$TMPDIR

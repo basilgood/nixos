@@ -71,7 +71,7 @@ in
       set $slurp ${slurp}/bin/slurp
       set $mako ${mako}/bin/mako
       set $idle ${swayidle}/bin/swayidle
-      set $lock $swaylock -f --screenshots --clock --effect-blur 7x5
+      set $lock $swaylock -f --screenshots --clock --effect-blur 7x5 --fade-in 0.2 --grace 5
       set $menu ${cfg.menu}
       set $term ${cfg.terminal}
 
@@ -98,12 +98,11 @@ in
 
       bindsym Print exec $slurp | $grim -g - - | wl-copy
 
-      bindsym --release $mod+Control+l exec $lock --fade-in 0.2 --grace 5
+      bindsym --release $mod+Control+l exec $lock
 
       exec $idle -w \
-        timeout 300 '$lock --fade-in 0.2 --grace 5' \
-        timeout 900 'swaymsg "output * dpms off"' \
-        resume 'swaymsg "output * dpms on"; pkill -nx swayidle'
+        timeout 300 '$lock' \
+        timeout 1800 'systemctl poweroff'
 
       gaps inner 2
       gaps outer 0
