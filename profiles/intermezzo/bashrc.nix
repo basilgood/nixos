@@ -18,8 +18,7 @@
       fi
       session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null |
       fzf --reverse --height=10 --exit-0) &&
-      tmux $change -t "$session" ||
-      echo "No sessions found."
+      tmux $change -t "$session" || echo "No sessions found."
     }
     # fasdlike
     f() {
@@ -35,7 +34,7 @@
         read ret
       } <<<$(
         (ls -1Av --group-directories-first --color=always) |
-          ${pkgs.fzf}/bin/fzf --ansi --reverse --exit-0 \
+          fzf --ansi --reverse --exit-0 \
             --print-query --query="$query" \
             --header="''${cur_folder/#$HOME/'~'} $query" \
             --expect=left,right \
@@ -43,7 +42,7 @@
             --bind '?:toggle-preview' \
             --preview " \
             [[ -d $(echo {}) ]] && ls -A --color {} ||
-            ${pkgs.bat}/bin/bat {} --color=always"
+            bat {} --color=always"
       )
       code=$?
       keep_query=
@@ -68,7 +67,7 @@
               $EDITOR "$ret" || xdg-open "$ret")
               cur_folder=$(pwd)
               ;;
-            'up')
+            'C-b')
               cd $HOME/Projects
               cur_folder=$(pwd)
               ;;
@@ -87,4 +86,5 @@
       done
     }
   '';
+  environment.systemPackages = with pkgs; [ fzf bat ];
 }
