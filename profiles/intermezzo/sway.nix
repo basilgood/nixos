@@ -8,6 +8,7 @@
       extraConfig = ''
         bindsym $mod+i exec swaymsg inhibit_idle open
         bindsym $mod+Shift+i exec swaymsg inhibit_idle none
+        bindsym $mod+p exec $slurp | $grim -g - - | wl-copy
         bindswitch lid:on output eDP-1 disable
         bindswitch lid:off output eDP-1 enable
         output * bg #141417 solid_color

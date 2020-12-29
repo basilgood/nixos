@@ -1,6 +1,7 @@
 { config, pkgs, ... }:
 {
   programs.bash.interactiveShellInit = ''
+    source /run/current-system/sw/share/bash-completion/completions/git-prompt.sh
     FZF_DEFAULT_COMMAND="fd --type f --hidden --follow --exclude '.git' --exclude 'node_modules'"
     FZF_DEFAULT_OPTS="--height=15 --reverse --no-info --color=16 --cycle"
     FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"

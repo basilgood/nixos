@@ -1,66 +1,17 @@
-{ lib
-, callPackage
-, vimPlugins
-, vim-vint
-, wrapNeovim
-, neovim-unwrapped
-, utf8proc
-, makeWrapper
+{ neovim-unwrapped
 , fetchFromGitHub
-, ripgrep
-, fd
-, fzf
-, git
 , tree-sitter
-, nodePackages
-, nixpkgs-fmt
-, editorconfig-core-c
-, python3Packages
 }:
-let
-  # lsp = callPackage ./lsp {};
-  # neovimConfig = callPackage ./config {};
-  nvim = wrapNeovim (
-    neovim-unwrapped.overrideAttrs (
-      old: rec {
-        version = "0.5.0";
-        src = fetchFromGitHub {
-          owner = "neovim";
-          repo = "neovim";
-          rev = "a1a4dd34ea26d397f7222afe943f67bbdb889d3f";
-          sha256 = "1d7i8087mjzbc9awqp3j0jr0pdn1k04kckml3wbbknws47fb27gx";
-        };
-        nativeBuildInputs = old.nativeBuildInputs ++ [ utf8proc tree-sitter makeWrapper ];
-        postInstall = old.postInstall + ''
-          wrapProgram $out/bin/nvim --prefix PATH : ${lib.makeBinPath
-          [
-            ripgrep
-            fzf
-            git
-            fd
-            nodePackages.eslint
-            nodePackages.prettier
-            nodePackages.typescript
-            nodePackages.typescript-language-server
-            nixpkgs-fmt
-            vim-vint
-            python3Packages.yamllint
-            editorconfig-core-c
-          ]
-        }
-        '';
-      }
-    )
-  ) {
-    withNodeJs = true;
-    extraPython3Packages = [ python3Packages.neovim ];
-    # inherit (neovimConfig) configure;
-  };
-in
-nvim.overrideAttrs (
+
+neovim-unwrapped.overrideAttrs (
   old: rec {
-    buildCommand = ''
-      export HOME=$TMPDIR
-    '' + old.buildCommand;
+    version = "0.5.0";
+    src = fetchFromGitHub {
+      owner = "neovim";
+      repo = "neovim";
+      rev = "bfed67e00ecdf71e0c7d17b1fd802f223b42c800";
+      sha256 = "0g3syvb5c5qyl3l2b90fkxkwy9hsg8x2gmhblrmp7hw9lia0lg05";
+    };
+    buildInputs = old.buildInputs ++ [ tree-sitter ];
   }
 )
