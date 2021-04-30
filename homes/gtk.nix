@@ -2,7 +2,6 @@
   gtk = {
     enable = true;
     theme = { name = "Nordic"; package = pkgs.nordic; };
-    iconTheme = {name = "Papirus Dark"; package = pkgs.papirus-icon-theme;};
+    iconTheme = {name = "Numix"; package = pkgs.numix-icon-theme;};
   };
-
 }

@@ -5,9 +5,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
   };
 
-  outputs = { self, nixpkgs, home-manager }:
+  outputs = { self, nixpkgs, home-manager, neovim-nightly-overlay}:
     let pathToAttrs = with builtins; path: listToAttrs (map
       (name: {
         name = nixpkgs.lib.removeSuffix ".nix" name;
@@ -21,7 +22,10 @@
       nixosModules = {
         core = { ... }: {
           nixpkgs.config.allowUnfree = true;
-          nixpkgs.overlays = [ self.overlay ];
+          nixpkgs.overlays = [
+            self.overlay
+            neovim-nightly-overlay.overlay
+          ];
         };
         ssh = ./modules/programs/ssh;
         lxc = ./modules/virtualisation/lxc.nix;

@@ -7,5 +7,4 @@ in
   box2lxd = callPackage ./box2lxd/default.nix { };
   ryzenadj = callPackage ./ryzenadj/default.nix { };
   parsec-client = callPackage ./parsec/default.nix { };
-  kak = callPackage ./kakoune { };
 }

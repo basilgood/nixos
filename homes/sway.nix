@@ -1,10 +1,11 @@
-{ pkgs, config, lib, ... }: {
+{ pkgs, config, lib, ... }:
+{
   wayland.windowManager.sway = {
     enable = true;
     wrapperFeatures.gtk = true;
   };
   wayland.windowManager.sway.config = {
-    menu = "bemenu-run -w -i --prefix '⇒' --prompt 'Run: ' --hb '#404654' --ff '#c698e3' --tf '#c698e3' --hf '#fcfcfc'";
+    menu = "${pkgs.j4-dmenu-desktop}/bin/j4-dmenu-desktop --term=$terminal";
     modifier = "Mod4";
     terminal = "alacritty";
     input."type:touchpad" = {
@@ -14,173 +15,160 @@
       middle_emulation = "enabled";
     };
     gaps = {
-      inner = 2;
-      outer = 0;
+      inner = 3;
+      smartBorders = "on";
       smartGaps = true;
     };
-    window.hideEdgeBorders = "smart";
+    window = {
+      border = 2;
+      titlebar = false;
+      commands = [
+        {
+          criteria = { class = "^.*"; };
+          command = "inhibit_idle fulscreen";
+        }
+        {
+          criteria = { class = "Google-chrome"; };
+          command = "floating enable, resize set width 1280px 800px";
+        }
+        {
+          criteria = { app_id = "keepassxc"; };
+          command = "floating enable, resize set width 1276px 814px";
+        }
+      ];
+    };
     keybindings = lib.mkOptionDefault {
       XF86AudioRaiseVolume = "exec pactl set-sink-volume @DEFAULT_SINK@ +5%";
       XF86AudioLowerVolume = "exec pactl set-sink-volume @DEFAULT_SINK@ -5%";
       XF86AudioMute = "exec pactl set-sink-mute @DEFAULT_SINK@ toggle";
       XF86MonBrightnessDown = "exec brightnessctl set 10%-";
       XF86MonBrightnessUp = "exec brightnessctl set +10%";
-      Print = "exec slurp | grim -g - - | wl-copy";
+      "Print" = "exec grimshot copy area";
+      "Shift+Print" = "exec grimshot save area";
       "Mod4+Control+l" = "exec loginctl lock-session";
     };
-    fonts = [ "monospace 9" ];
-    bars = [{
-      mode = "dock";
-      hiddenState = "hide";
-      position = "bottom";
-      fonts = [ "monospace 9" ];
-      workspaceButtons = true;
-      workspaceNumbers = true;
-      statusCommand = "i3status-rs ~/.config/i3status-rust/config-bottom.toml";
-      trayOutput = "primary";
-      colors = {
-        background = "#2E3440";
-        statusline = "#839496";
-        separator = "#777777";
-        focusedWorkspace = {
-          border = "#4C7899";
-          background = "#285577";
-          text = "#D8DEE9";
-        };
-        activeWorkspace = {
-          border = "#333333";
-          background = "#4C7899";
-          text = "#D8DEE9";
-        };
-        inactiveWorkspace = {
-          border = "#3B4252";
-          background = "#2E3440";
-          text = "#888888";
-        };
-        urgentWorkspace = {
-          border = "#2F343A";
-          background = "#900000";
-          text = "#D8DEE9";
-        };
-        bindingMode = {
-          border = "#2F343A";
-          background = "#900000";
-          text = "#D8DEE9";
-        };
-      };
-    }];
+    fonts = [ "JetBrainsMono Nerd Font" ];
+    bars = [{ command = "waybar"; }];
     startup = [
       { command = "mako"; }
       {
         command = ''
-          swayidle -w \
-            timeout 300 '$lock' \
-            timeout 600 'swaymsg "output * dpms off"' \
-              resume 'swaymsg "output * dpms on"' \
-            before-sleep '$lock' \
-            lock '$lock'
+          exec swayidle -w \
+          timeout 300 'swaylock -f -c 000000' \
+          timeout 1500 'swaymsg "output * dpms off"' \
+             resume 'swaymsg "output * dpms on"' \
+          before-sleep 'swaylock -f -c 000000'
         '';
       }
     ];
   };
 
-  wayland.windowManager.sway.extraConfig = ''
-    set $lock swaylock \
-      --screenshots \
-      --clock \
-      --indicator \
-      --indicator-radius 100 \
-      --indicator-thickness 7 \
-      --effect-blur 7x5 \
-      --effect-vignette 0.5:0.5 \
-      --ring-color 3b4252ff \
-      --key-hl-color ebcb8bff \
-      --inside-color 2e3440ff \
-      --separator-color 3b4252ff \
-      --grace 2 \
-      --fade-in 0.2
-  '';
+  programs = {
+    waybar = {
+      enable = true;
+      settings = [
+        {
+          layer = "top";
+          position = "bottom";
+          height = 18;
+          modules-left = [ "sway/workspaces" "sway/mode" ];
+          modules-center = [ ];
+          modules-right = [
+            "idle_inhibitor"
+            "network"
+            "battery"
+            "cpu"
+            "memory"
+            "temperature"
+            "pulseaudio"
+            "clock"
+            "tray"
+          ];
+          modules = {
+            idle_inhibitor = {
+              format = "{icon}";
+              format-icons = {
+                activated = "";
+                deactivated = "";
+              };
+              on-click = "exec swaymsg inhibit_idle open";
+            };
+            battery = {
+              bat = "BAT1";
+              format = " {icon} {capacity}%";
+              format-icons = [ " " " " " " " " " " ];
+            };
+            clock = {
+              tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
+              format = "{:%A %d %B, %H:%M}";
+            };
+            cpu = {
+              format = " {usage}%";
+              interval = "1";
+            };
+            memory = { format = " {used:0.1f} GB"; };
+            network = {
+              format = "{icon}";
+              format-alt = "{ipaddr}/{cidr}";
+              format-alt-click = "click-right";
+              format-icons = {
+                wifi = [ "" ];
+                ethernet = [ "" ];
+                disconnected = [ "" ];
+              };
+              tooltip-format = "{ifname}";
+              tooltip-format-wifi = "{essid} ({signalStrength}%)";
+              tooltip-format-ethernet = "{ifname}";
+              tooltip-format-disconnected = "Disconnected";
+              on-click = "alacritty -e nmtui";
+            };
+            temperature = {
+              hwmon-path = "/sys/class/hwmon/hwmon3/temp1_input";
+              critical-threshold = 80;
+              format = " {temperatureC}°C";
+            };
+            pulseaudio = {
+              format = "{icon} {volume}%";
+              format-bluetooth = "{icon} [{desc}] {volume}%";
+              format-muted = " {volume}%";
+              format-icons = {
+                default = [ "" "" ];
+                headphones = "";
+              };
+              on-click = "alacritty -e pulsemixer";
+            };
+            tray = {
+              icon-size = 21;
+              spacing = 10;
+            };
+          };
+        }
+      ];
+    };
+  };
 
   home.packages = with pkgs; [
-    swaylock-effects
+    swaylock
     swayidle
     wl-clipboard
-    bemenu
     brightnessctl
-    slurp
-    grim
+    sway-contrib.grimshot
     lm_sensors
     pavucontrol
+    pulsemixer
+    libappindicator
   ];
-
-  programs.i3status-rust.enable = true;
-  programs.i3status-rust.bars.bottom = {
-    settings = {
-      theme = "slick";
-      overrides = {
-        idle_bg = "#2e3440";
-        idle_fg = "#839496";
-        separator = "";
-
-      };
-    };
-    icons = "awesome";
-    blocks = [
-      {
-        block = "battery";
-        driver = "upower";
-        device = "BAT1";
-        format = "{percentage}% {time}";
-      }
-      {
-        block = "memory";
-        display_type = "memory";
-        format_mem = "{Mug}%";
-        format_swap = "{SUp}%";
-      }
-      {
-        block = "cpu";
-        format = "{utilization}% {frequency}";
-      }
-      {
-        block = "temperature";
-        collapsed = false;
-        interval = 1;
-        format = "{max}°";
-        chip = "k10temp-*";
-        idle = 70;
-        info = 75;
-        warning = 80;
-      }
-      {
-        block = "sound";
-        on_click = "pavucontrol";
-      }
-      {
-        block = "networkmanager";
-        on_click = "alacritty -e nmtui";
-        interface_name_exclude = [ "br\\-[0-9a-f]{12}" "lxdbr\\d+" ];
-      }
-      {
-        block = "time";
-        interval = 60;
-        format = "%a %d/%m %R";
-      }
-    ];
-  };
 
   programs.mako = {
     enable = true;
-    defaultTimeout = 10000;
-    font = "sansSerif 9";
-    backgroundColor = "#282c34";
-    borderSize = 1;
-    maxIconSize = 24;
-  };
-
-  services.wlsunset  = {
-    enable = true;
-    latitude = "47.15";
-    longitude = "27.59";
+    layer = "overlay";
+    font = "monospace 10";
+    textColor = "#b3b1ad";
+    backgroundColor = "#000000";
+    borderColor = "#1f1a10";
+    borderSize = 2;
+    borderRadius = 5;
+    defaultTimeout = 15000;
+    sort = "+time";
   };
 }

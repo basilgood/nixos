@@ -1,40 +1,72 @@
 { pkgs, ... }: {
-  programs.alacritty.enable = true;
-  programs.alacritty.settings = {
-    colors = {
-      primary = {
-        background = "0x2E3440";
-        foreground = "0xD8DEE9";
+  programs.alacritty = {
+    enable = true;
+    settings = {
+      env = {
+        TERM = "xterm-256color";
       };
-      cursor = {
-        text = "0x2E3440";
-        cursor = "0xD8DEE9";
+      dynamic_title = true;
+      window = {
+        padding = {
+          x = 0;
+          y = 0;
+        };
+        dynamic_padding = true;
+        decorations = "none";
       };
-      normal = {
-        black = "0x3B4252";
-        red = "0xBF616A";
-        green = "0xA3BE8C";
-        yellow = "0xEBCB8B";
-        blue = "0x81A1C1";
-        magenta = "0xB48EAD";
-        cyan = "0x88C0D0";
-        white = "0xE5E9F0";
+      font = {
+        normal = {
+          family = "JetBrainsMono Nerd Font";
+          style = "regular";
+        };
+        bold = {
+          family = "JetBrainsMono Nerd Font";
+          style = "bold";
+        };
+        italic = {
+          family = "JetBrainsMono Nerd Font";
+          style = "italic";
+        };
+        size = 10;
+        offset.x= 0;
+        offset.y= 0;
+        glyph_offset.x=0;
+        glyph_offset.y=0;
       };
-      bright = {
-        black = "0x4C566A";
-        red = "0xBF616A";
-        green = "0xA3BE8C";
-        yellow = "0xEBCB8B";
-        blue = "0x81A1C1";
-        magenta = "0xB48EAD";
-        cyan = "0x8FBCBB";
-        white = "0xECEFF4";
+      draw_bold_text_with_bright_colors = false;
+      colors = {
+        primary = {
+          background = "0x1a1b26";
+          foreground = "0xa9b1d6";
+        };
+        cursor = {
+          text = "0x2E3440";
+          cursor = "0xD8DEE9";
+          style = "Block";
+          unfocused_hollow = false;
+          blinking = "Off";
+        };
+        normal = {
+          black = "0x32344a";
+          red = "0xf7768e";
+          green = "0x9ece6a";
+          yellow ="0xe0af68";
+          blue = "0x7aa2f7";
+          magenta = "0xad8ee6";
+          cyan = "0x449dab";
+          white = "0x787c99";
+        };
+        bright = {
+          black = "0x444b6a";
+          red = "0xff7a93";
+          green = "0xb9f27c";
+          yellow = "0xff9e64";
+          blue = "0x7da6ff";
+          magenta = "0xbb9af7";
+          cyan = "0x0db9d7";
+          white = "0xacb0d0";
+        };
       };
-    };
-    font = { size = 10; };
-    background_opacity = 0.98;
-    env = {
-      TERM = "xterm-256color";
     };
   };
 }
