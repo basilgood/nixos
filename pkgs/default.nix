@@ -7,4 +7,5 @@ in
   box2lxd = callPackage ./box2lxd/default.nix { };
   ryzenadj = callPackage ./ryzenadj/default.nix { };
   parsec-client = callPackage ./parsec/default.nix { };
+  git-foresta = callPackage ./foresta/default.nix { };
 }
