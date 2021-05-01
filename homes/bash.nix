@@ -84,7 +84,7 @@
           [[ -e "$PWD/.git/refs/stash" ]] && meta+=$STASH
           [[ "$status" =~ ahead\ ([0-9]+) ]] && meta+=$AHEAD''${BASH_REMATCH[1]}
           [[ "$status" =~ behind\ ([0-9]+) ]] && meta+=$BEHIND''${BASH_REMATCH[1]}
-          echo "$SPACE"$DARKGRAY[$GREEN$branch$RED$meta$DARKGRAY]$RST
+          echo "$SPACE"$GREEN$branch$RED$meta$RST
         fi
       }
       function nix_module {
@@ -94,12 +94,12 @@
         echo $BLUE'\w'$RST
       }
       function end_module {
-        echo '\n'$PROMPT$SPACE$RST
+        echo $PROMPT$SPACE$RST
       }
       function set_bash_prompt {
         exitcode="$?"
         PS1='\n'$(dir_module)$(git_module)$(jobs_module)$(nix_module)
-        PS1+=$(ret_module)$(end_module)
+        PS1+='\n'$(ret_module)$(end_module)
         PS2="$WHITE$CONTINUED  $RST"
       }
       PROMPT_COMMAND='history -a; set_bash_prompt'
