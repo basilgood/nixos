@@ -52,9 +52,11 @@
 
       SPACE=' '
       PROMPT='✎'
+      DIR=''
       JOBS='✦'
       NIX='❄'
       CONTINUED='↪︎'
+      GIT=''
       AHEAD='⇡'
       BEHIND='⇣'
       DIRTY='*'
@@ -84,14 +86,14 @@
           [[ -e "$PWD/.git/refs/stash" ]] && meta+=$STASH
           [[ "$status" =~ ahead\ ([0-9]+) ]] && meta+=$AHEAD''${BASH_REMATCH[1]}
           [[ "$status" =~ behind\ ([0-9]+) ]] && meta+=$BEHIND''${BASH_REMATCH[1]}
-          echo "$SPACE"$GREEN$branch$RED$meta$RST
+          echo "$SPACE"$GREEN$GIT$SPACE$branch$RED$meta$RST
         fi
       }
       function nix_module {
         [ -n "$IN_NIX_SHELL" ] && echo "$SPACE"$CYAN$NIX$RST
       }
       function dir_module {
-        echo $BLUE'\w'$RST
+        echo $BLUE$DIR$SPACE'\w'$RST
       }
       function end_module {
         echo $PROMPT$SPACE$RST
