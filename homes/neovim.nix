@@ -10,6 +10,7 @@ with pkgs;
     extraPackages = [
       nixpkgs-fmt
       nodePackages.typescript-language-server
+      efm-langserver
       nodePackages.prettier
       vim-vint
       luajitPackages.luacheck

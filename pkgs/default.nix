@@ -8,4 +8,5 @@ in
   ryzenadj = callPackage ./ryzenadj/default.nix { };
   parsec-client = callPackage ./parsec/default.nix { };
   git-foresta = callPackage ./foresta/default.nix { };
+  efm-langserver = callPackage ./efm/default.nix { };
 }
