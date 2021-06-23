@@ -1,4 +1,5 @@
 { stdenv
+, lib
 , kakoune
 , kakoune-unwrapped
 , kakounePlugins
@@ -18,7 +19,7 @@
 , nix
 , kak-lsp
 }:
-with stdenv.lib;
+with lib;
 let
   plugins = callPackage ./plugins { };
   kakoune = kakoune-unwrapped.overrideAttrs

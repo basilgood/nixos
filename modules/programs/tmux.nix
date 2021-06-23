@@ -2,7 +2,7 @@
 with pkgs.tmuxPlugins; {
   programs.tmux = {
     baseIndex = 1;
-    terminal = "tmux-256color";
+    terminal = "xterm-256color";
     aggressiveResize = true;
     historyLimit = 500000;
     resizeAmount = 5;

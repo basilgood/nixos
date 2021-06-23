@@ -1,5 +1,4 @@
 { stdenv, makeDesktopItem, dpkg, fetchurl, buildFHSUserEnv }:
-
 let
   desktopItem = makeDesktopItem {
     desktopName = "Parsec";
@@ -51,8 +50,12 @@ buildFHSUserEnv {
       xorg.libXrender
       xorg.libXxf86vm
       xorg.libxcb
+      openssl
     ];
   runScript = "/usr/bin/parsecd";
+  profile = ''
+    export LIBVA_DRIVER_NAME=radeonsi
+  '';
   extraInstallCommands = ''
     mkdir -p $out/share/{applications,pixmaps}
     ln -sfv ${parsecd}/share/icons/hicolor/256x256/apps/parsecd.png $out/share/pixmaps

@@ -2,83 +2,101 @@
   programs.bash = {
     shellAliases = {
       "~" = "cd ~";
+      ".." = "cd ../";
       grep = "grep --color=auto";
     };
     promptInit = ''
-      GIT_PS1_SHOWUNTRACKEDFILES=1
-      GIT_PS1_SHOWUPSTREAM="auto"
-      GIT_PS1_SHOWCOLORHINTS=1
-      GIT_PS1_SHOWDIRTYSTATE=1
-      GIT_PS1_SHOWSTASHSTATE=1
-      GIT_PS1_SHOWUNTRACKEDFILES=1
-      bold=$(tput bold)
-      red=$(tput setaf 1)
-      yellow=$(tput setaf 3)
-      cyan=$(tput setaf 6)
-      magenta=$(tput setaf 5)
-      reset=$(tput sgr0)
-      prompt_command(){
-        local retval="''${?#0}"
-        local prompt="\n"
-        local prompt_end=""
-        local jobsval=`jobs -p | wc -l`
-
-        [ -n "$retval" ] && prompt+="$red$retval$reset "
-        [ -n "$IN_NIX_SHELL" ] && prompt+="$cyan $reset "
-        prompt+="$bold$yellow\w$reset"
-
-        [ $jobsval -ne 0 ] && prompt_end+=" $bold$cyan$jobsval$reset"
-        prompt_end+="\n"
-        [ $(id -u) -eq 0 ] && prompt_end+="\[$red\]#" || prompt_end+="\[$magenta\]❯"
-        prompt_end+="\[$reset\] "
-
-        if type -t __git_ps1 > /dev/null 2>&1 ; then
-          __git_ps1 "$prompt" "$prompt_end"
-        else
-          PS1="$prompt $prompt_end"
-        fi
-        history -a
+      RED="\[\e[0;31m\]"
+      DARKGRAY="\[\e[0;90m\]"
+      YELLOW="\[\e[0;33m\]"
+      BLUE="\[\e[0;34m\]"
+      PURPLE="\[\e[0;35m\]"
+      GREEN="\[\e[0;32m\]"
+      WHITE="\[\e[0;37m\]"
+      CYAN="\[\e[0;34m\]"
+      RST="\[\e[0m\]"
+      SPACE=' '
+      PROMPT='✎'
+      DIR=''
+      JOBS='✦'
+      NIX='❄'
+      CONTINUED='↪︎'
+      GIT=''
+      AHEAD='⇡'
+      BEHIND='⇣'
+      DIRTY='*'
+      STAGED='+'
+      UNTRACKED='?'
+      STASH='≡'
+      function ret_module {
+        [ $exitcode != 0 ] && echo $RED
       }
-      PROMPT_COMMAND=prompt_command
+      function jobs_module {
+        jobsval=$(jobs -p | wc -l)
+        [ $jobsval -ne 0 ] && echo "$SPACE"$YELLOW$JOBS$RST
+      }
+      function git_module {
+        if [[ "true" = "$(git rev-parse --is-inside-work-tree 2>/dev/null)" ]]; then
+          git update-index --really-refresh -q &>/dev/null
+          local meta
+          local branch="$(git symbolic-ref --quiet --short HEAD 2> /dev/null ||
+            git rev-parse --short HEAD 2> /dev/null || echo '(unknown)')"
+          local status=`command git status --porcelain -b 2>/dev/null`
+          branch="''${branch##refs/heads/}"
+          [ -z "$branch" ] && branch=""
+          [[ "$status" =~ ([[:cntrl:]][A-Z][A-Z\ ]\ ) ]] && meta+=$STAGED
+          [[ "$status" =~ ([[:cntrl:]][A-Z\ ][A-Z]\ ) ]] && meta+=$DIRTY
+          [[ "$status" =~ ([[:cntrl:]]\?\?\ ) ]] && meta+=$UNTRACKED
+          [[ -e "$PWD/.git/refs/stash" ]] && meta+=$STASH
+          [[ "$status" =~ ahead\ ([0-9]+) ]] && meta+=$AHEAD''${BASH_REMATCH[1]}
+          [[ "$status" =~ behind\ ([0-9]+) ]] && meta+=$BEHIND''${BASH_REMATCH[1]}
+          echo "$SPACE"$GREEN$GIT$SPACE$branch$RED$meta$RST
+        fi
+      }
+      function nix_module {
+        [ -n "$IN_NIX_SHELL" ] && echo "$SPACE"$CYAN$NIX$RST
+      }
+      function dir_module {
+        echo $BLUE$DIR$SPACE'\w'$RST
+      }
+      function end_module {
+        echo $PROMPT$SPACE$RST
+      }
+      function set_bash_prompt {
+        exitcode="$?"
+        PS1='\n'$(dir_module)$(git_module)$(jobs_module)$(nix_module)
+        PS1+='\n'$(ret_module)$(end_module)
+        PS2="$WHITE$CONTINUED  $RST"
+      }
+      PROMPT_COMMAND='history -a; set_bash_prompt'
+
+      eval "$(direnv hook bash)"
     '';
     interactiveShellInit = ''
-      PROMPT_DIRTRIM=3
-      set -o notify
-
-      shopt -s checkwinsize
-      shopt -s globstar 2> /dev/null
-      shopt -s nocaseglob;
-      shopt -s autocd 2> /dev/null
-      shopt -s dirspell 2> /dev/null
-      shopt -s cdspell 2> /dev/null
+      shopt -s autocd
+      shopt -s cdspell
+      shopt -s direxpand
       shopt -s histappend
-      shopt -s cmdhist
-
-      bind "set completion-ignore-case on"
-      bind "set completion-map-case on"
-      bind "set show-all-if-ambiguous on"
-      bind "set menu-complete-display-prefix on"
-      bind "set mark-symlinked-directories on"
-      bind "set colored-stats on"
-      bind "set visible-stats on"
-      bind "set page-completions off"
-      bind "set skip-completed-text on"
-      bind "set bell-style none"
-
-      # bind '"\t": menu-complete'
+      set -o notify
+      bind 'set completion-ignore-case on'
+      bind 'set completion-map-case on'
+      bind 'set show-all-if-ambiguous on'
+      bind 'set menu-complete-display-prefix on'
+      bind 'set mark-symlinked-directories on'
+      bind 'set colored-stats on'
+      bind 'set visible-stats on'
+      bind 'set page-completions off'
+      bind 'set skip-completed-text on'
+      bind 'set bell-style none'
+      bind 'Tab: menu-complete'
       bind '"\e[Z": menu-complete-backward'
       bind '"\e[A": history-search-backward'
       bind '"\e[B": history-search-forward'
       bind '"\e[M": kill-word'
       bind '"\C-h": backward-kill-word'
-
       HISTSIZE=-1
       HISTFILESIZE=-1
       HISTIGNORE="&:[ ]*:exit:l:ls:ll:bg:fg:history*:clear:kill*:?:??"
-
-      hm() {
-        sed 's/[[:space:]]*$//' $HISTFILE | tac | awk '!x[$0]++' | tac | ${pkgs.moreutils}/bin/sponge $HISTFILE
-      }
 
       stty -ixon
     '';

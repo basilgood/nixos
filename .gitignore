@@ -1,4 +1,3 @@
 local.nix
 *.ovpn
-hardware-configuration.nix
 .nixpkgs

@@ -1,10 +1,13 @@
-{ symlinkJoin, gitAndTools, makeWrapper }:
-
+{ tig, symlinkJoin, makeWrapper }:
 symlinkJoin {
-  name = "tig-with-config";
-  paths = [ gitAndTools.tig ];
-  nativeBuildInputs = [ makeWrapper ];
+  name = "tig";
+  buildInputs = [makeWrapper];
+  paths = [ tig ];
+  tigrc = ./tigrc;
   postBuild = ''
-    wrapProgram $out/bin/tig --set TIGRC_USER ${./tigrc}
+    mkdir -p $out/share/config/tig
+    cp $tigrc $out/share/config/tig/config
+    wrapProgram "$out/bin/tig" \
+    --set XDG_CONFIG_HOME "$out/share/config"
   '';
 }

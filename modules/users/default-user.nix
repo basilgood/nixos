@@ -34,6 +34,7 @@ in {
           "video"
           "networkmanager"
           "systemd-journal"
+          "adbusers"
         ] ++ cfg.extraGroups;
         initialPassword = "${cfg.name}";
         packages = mkDefault cfg.packages;

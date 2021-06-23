@@ -4,11 +4,10 @@ let
 in
 rec {
   alacritty = callPackage ../../pkgs/alacritty/default.nix {};
-  gitAndTools = super.gitAndTools // { tig = callPackage ../../pkgs/tig/default.nix {}; };
+  tig = callPackage ../../pkgs/tig/default.nix {};
   dmenu-wayland = callPackage ../../pkgs/dmenu-wayland/default.nix {};
   gnome-ssh-askpass3 = callPackage ../../pkgs/openssh/default.nix {};
   lxc-templates = callPackage ../../pkgs/lxc-templates/default.nix {};
-  nerdfonts_dejavu = callPackage ../../pkgs/nerdfonts/default.nix {};
   box2lxd = callPackage ../../pkgs/box2lxd/default.nix {};
   ryzenadj = callPackage ../../pkgs/ryzenadj/default.nix {};
   parsec-client = callPackage ../../pkgs/parsec/default.nix {};
@@ -16,7 +15,5 @@ rec {
   yarn-completion = callPackage ../../pkgs/yarn-completion/default.nix {};
   _vim = callPackage ../../pkgs/vim {};
   git-foresta = callPackage ../../pkgs/git-foresta {};
-  fzf-tab-completion = callPackage ../../pkgs/fzf-tab-completion {};
-  kak = callPackage ../../pkgs/kakoune {};
-  matrix-dimension = callPackage ../../pkgs/matrix-dimension {};
+  _nvim = callPackage ../../pkgs/nvim {};
 }

@@ -31,6 +31,9 @@ in
 
     programs.sway = {
       extraPackages = (with pkgs; [
+        swayidle
+        swaylock
+        mako
         glib
         paper-icon-theme
         nordic
@@ -41,13 +44,7 @@ in
         wl-clipboard
         lm_sensors
       ]);
-      extraSessionCommands = ''
-        export XKB_DEFAULT_LAYOUT=us
-        export XDG_DATA_DIRS=${
-          let schema = pkgs.gsettings-desktop-schemas;
-            in "${schema}/share/gsettings-schemas/${schema.name}"
-        }:$XDG_DATA_DIRS
-      '';
+      wrapperFeatures.gtk = true;
     };
 
     users.defaultUser.extraGroups = [ "sway" ];
@@ -59,14 +56,8 @@ in
     environment.etc."sway/config".text = with pkgs; ''
       include "${sway}/etc/sway/config"
 
-      set $swaylock ${swaylock-effects}/bin/swaylock-effects
       set $brightness ${brightnessctl}/bin/brightnessctl
-      set $grim ${grim}/bin/grim
-      set $mogrify ${imagemagick}/bin/mogrify
-      set $slurp ${slurp}/bin/slurp
-      set $mako ${mako}/bin/mako
-      set $idle ${swayidle}/bin/swayidle
-      set $lock swaylock -f --screenshots --clock --fade-in 0.2 --effect-scale 0.4 --effect-vignette 0.2:0.5 --effect-blur 2x2 --grace 5
+      set $grimshot ${sway-contrib.grimshot}/bin/grimshot
       set $menu ${cfg.menu}
       set $term ${cfg.terminal}
 
@@ -91,13 +82,15 @@ in
       bindsym XF86MonBrightnessDown exec $brightness set 10%-
       bindsym XF86MonBrightnessUp exec $brightness set +10%
 
-      bindsym Print exec $slurp | $grim -g - - | wl-copy
+      bindsym Print exec $grimshot copy area
+      bindsym Shift+Print exec $grimshot save area
 
-      bindsym --release $mod+ctrl+l exec '$lock'
-      exec $idle -w \
-        timeout 300 '$lock' \
-        timeout 600 'systemctl suspend' \
-        lock '$lock'
+      bindsym --release $mod+ctrl+l exec swaylock -f -c 000000
+      exec swayidle -w \
+      timeout 300 'swaylock -f -c 000000' \
+      timeout 1500 'swaymsg "output * dpms off"' \
+          resume 'swaymsg "output * dpms on"' \
+      before-sleep 'swaylock -f -c 000000'
 
       gaps inner 2
       gaps outer 0
@@ -127,8 +120,8 @@ in
         icon_theme Paper
       }
 
-      exec --no-startup-id $mako \
-      --max-visible=1 \
+      exec --no-startup-id mako \
+      --max-visible=5 \
       --layer=overlay \
       --font=monospace 10 \
       --text-color=#b3b1ad \
@@ -136,19 +129,15 @@ in
       --border-color=#1f1a10 \
       --border-size=2 \
       --border-radius=5 \
-      --default-timeout=10000
-
-      set $gnome-schema org.gnome.desktop.interface
-      exec_always {
-        gsettings set $gnome-schema gtk-theme 'Nordic-bluish-accent'
-        gsettings set $gnome-schema icon-theme 'Paper'
-      }
+      --default-timeout=10000 \
+      --sort=-time
 
       mode passthrough {
         bindsym $mod+Pause mode default
       }
       bindsym $mod+Pause mode passthrough
       for_window [class="^.*"] inhibit_idle fullscreen
+      for_window [class="Google-chrome"] floating enable, resize set width 1280px 800px
 
       ${cfg.extraConfig}
     '';

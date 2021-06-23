@@ -12,9 +12,6 @@
       let
         bar = pkgs.writeShellScriptBin "script.sh" ''
           date_formatted=" "$(date "+%a %d/%m %R")
-          batcapacity=$(cat /sys/class/power_supply/BAT1/capacity )%
-          battery=$(cat /sys/class/power_supply/BAT1/status | head -c 1 | awk '''{print tolower($0)}''') $batcapacity
-          [ ! -z $battery ] && ([ $batcapacity -lt 10 ] && \\e[31m"  "$battery || \\e[39m"  "$battery)
           audio_volume=$(${pkgs.pamixer}/bin/pamixer --get-volume)
           audio_is_muted=$(${pkgs.pamixer}/bin/pamixer --get-mute)
           [ $audio_is_muted = "true" ] && audio="婢 mute" || audio=" "$audio_volume%
@@ -23,7 +20,7 @@
           cpuf=$((`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq` / 1000))
           cput=" "$(${pkgs.lm_sensors}/bin/sensors k10temp-pci-* | ${pkgs.gawk}/bin/awk '/Tdie/ {print $2}' | cut -c 2-5)
           gput=$(${pkgs.lm_sensors}/bin/sensors amdgpu-pci-* | ${pkgs.gawk}/bin/awk '/edge/ {print $2}' | cut -c 2-5)
-          echo $mem $cpu $cpuf $cput $gput $audio $battery_pluggedin $battery_time $battery_charge $date_formatted
+          echo $mem $cpu $cpuf $cput $gput $audio $date_formatted
         '';
       in
       ''
@@ -32,14 +29,21 @@
 
     extraConfig = ''
       output * bg ${./wall.jpg} fill
-        for_window {
-          [class="^.*"] inhibit_idle fullscreen
-          [app_id="^.*"] inhibit_idle fullscreen
-          [class="^TelegramDesktop$"] floating enable
-          [app_id="keepassxc"] floating enable
-        }
+      output "Goldstar Company Ltd W2486 0x00001FA6" mode 1920x1080@60Hz
+      output "Samsung Electric Company SAMSUNG 0x00000F00" mode 4096x2160@60Hz scale_filter smart scale 1.5
+      output "Goldstar Company Ltd LG ULTRAWIDE 0x0000BF93" mode 2560x1080@59.978001Hz scale_filter smart scale 1.1
+      for_window {
+        [class="^.*"] inhibit_idle fullscreen
+        [app_id="^.*"] inhibit_idle fullscreen
+        [class="^TelegramDesktop$"] floating enable
+        [app_id="keepassxc"] floating enable
+      }
     '';
   };
+  programs.bash.shellAliases = {
+    "n" = "nix develop github:basilgood/nvim-flake#";
+  };
+  programs.adb.enable = true;
   boot.kernelParams = [
     "resume_offset=2842624"
   ];
@@ -51,4 +55,7 @@
       size = 2048;
     }
   ];
+  virtualisation.wine.enable = true;
+  services.lorri.enable = true;
+  services.dbus.packages = [ pkgs.gcr ];
 }

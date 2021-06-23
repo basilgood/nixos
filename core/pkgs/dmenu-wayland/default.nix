@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, meson, ninja, pkgconfig, wayland-protocols, wayland, pango, cairo, libxkbcommon, glib, gob2, }:
+{ stdenv, lib, fetchFromGitHub, meson, ninja, pkgconfig, wayland-protocols, wayland, pango, cairo, libxkbcommon, glib, gob2, }:
 
 stdenv.mkDerivation rec {
   pname = "dmenu-wayland";
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ meson ninja pkgconfig wayland-protocols ];
   buildInputs = [ pango cairo libxkbcommon glib gob2 wayland ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "dmenu-wl is an efficient dynamic menu for wayland (wlroots).";
     homepage = https://github.com/nyyManni/dmenu-wayland;
     platforms = platforms.linux;
